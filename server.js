@@ -1,99 +1,79 @@
 const express = require("express");
-const WebSocket = require("ws");
+const http = require("http");
+const { Server } = require("socket.io");
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const server = http.createServer(app);
+const io = new Server(server);
 
-// Serve frontend files
 app.use(express.static("public"));
 
-const server = app.listen(PORT, () => {
-  console.log("Server running on port " + PORT);
-});
+const PORT = process.env.PORT || 3000;
 
-const wss = new WebSocket.Server({ server });
+// ✅ GAME STATE
+let players = {};
+let turn = 0;
 
-let players = [];
-let currentMessenger = 0;
-let submissions = [];
-let scores = {};
-let gameStarted = false;
+let gameState = {
+  scores: {},
+  usernames: {}
+};
 
-const scenarioCards = [
-  { text: "A dragon lost its treasure.", feeling: "sad" },
-  { text: "A knight is about to fight a monster.", feeling: "afraid" },
-  { text: "A wizard’s spell failed.", feeling: "angry" }
+const scenarios = [
+  { text: "You face a dragon", choices: ["Stay calm", "Panic"] },
+  { text: "Your spell failed", choices: ["Try again", "Give up"] },
+  { text: "You lost treasure", choices: ["Think calmly", "Get angry"] }
 ];
 
-wss.on("connection", (ws) => {
-  const id = players.length;
-  players.push({ id, ws });
-  scores[id] = 0;
+function getScenario() {
+  return scenarios[Math.floor(Math.random() * scenarios.length)];
+}
 
-  console.log("Player connected:", id);
+let currentScenario = getScenario();
 
-  ws.send(JSON.stringify({ type: "init", id }));
+io.on("connection", (socket) => {
+  console.log("Player connected");
 
-  if (players.length >= 3 && !gameStarted) {
-    gameStarted = true;
-    console.log("Starting game...");
-    setTimeout(startRound, 1000);
-  }
+  socket.on("join", (username) => {
+    players[socket.id] = username;
+    gameState.usernames[socket.id] = username;
+    gameState.scores[socket.id] = 0;
 
-  ws.on("message", (msg) => {
-    const data = JSON.parse(msg);
+    io.emit("update", {
+      players,
+      turn,
+      scenario: currentScenario,
+      gameState
+    });
+  });
 
-    if (data.type === "submitCard") {
-      submissions.push({ playerId: data.playerId, card: data.card });
+  socket.on("choice", (index) => {
+    const ids = Object.keys(players);
+    if (ids[turn] === socket.id) {
 
-      if (submissions.length === players.length - 1) {
-        const messenger = players[currentMessenger];
-
-        if (messenger && messenger.ws.readyState === WebSocket.OPEN) {
-          messenger.ws.send(
-            JSON.stringify({
-              type: "showSubmissions",
-              submissions
-            })
-          );
-        }
+      if (index === 0) {
+        gameState.scores[socket.id]++;
       }
-    }
 
-    if (data.type === "chooseWinner") {
-      scores[data.winnerId] += 10;
+      turn = (turn + 1) % ids.length;
+      currentScenario = getScenario();
 
-      broadcast({
-        type: "roundResult",
-        winner: data.winnerId,
-        scores
+      io.emit("update", {
+        players,
+        turn,
+        scenario: currentScenario,
+        gameState
       });
-
-      currentMessenger = (currentMessenger + 1) % players.length;
-      submissions = [];
-
-      setTimeout(startRound, 2000);
     }
+  });
+
+  socket.on("disconnect", () => {
+    delete players[socket.id];
+    delete gameState.scores[socket.id];
+    delete gameState.usernames[socket.id];
   });
 });
 
-function startRound() {
-  const scenario =
-    scenarioCards[Math.floor(Math.random() * scenarioCards.length)];
-
-  console.log("Starting round");
-
-  broadcast({
-    type: "newRound",
-    messenger: currentMessenger,
-    scenario
-  });
-}
-
-function broadcast(data) {
-  players.forEach((p) => {
-    if (p.ws.readyState === WebSocket.OPEN) {
-      p.ws.send(JSON.stringify(data));
-    }
-  });
-}
+server.listen(PORT, () => {
+  console.log("Server running");
+});

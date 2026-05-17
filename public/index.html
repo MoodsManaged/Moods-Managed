@@ -1,72 +1,122 @@
-<!DOCTYPE html><<head>
-  <title>Moods Managed</title>
+<!DOCTYPE html>
+<html>
+<head>
+<title>Moods Managed</title>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Georgia, serif;
-      background: radial-gradient(circle at center, #2c2f75, #0a0c25);
-      color: white;
-      text-align: center;
-    }
+<!-- ✅ ✅ REAL SCRIPT TAGS (THIS WAS THE PROBLEM) -->
+<script src="/socket.io/socket.io.js"></script>
+<script src="game.js"></script>
 
-    h1 {
-      font-size: 48px;
-      color: gold;
-      margin: 20px;
-      text-shadow: 0 0 20px gold;
-    }
+<style>
+body {
+  margin: 0;
+  font-family: Arial;
+  background: linear-gradient(to bottom, #1b1d47, #0d0f2e);
+  color: white;
+  text-align: center;
+}
 
-    button {
-      padding: 12px;
-      margin: 10px;
-      border-radius: 10px;
-      border: none;
-      background: gold;
-      cursor: pointer;
-      font-size: 16px;
-    }
+h1 {
+  margin-top: 80px;
+  font-size: 60px;
+  color: gold;
+  text-shadow: 0 0 20px gold;
+}
 
-    .card {
-      width: 140px;
-      height: 180px;
-      background: #5a4fcf;
-      border-radius: 15px;
-      margin: 10px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-    }
-  </style>
+h2 {
+  font-size: 30px;
+  margin-top: 20px;
+}
+
+.menu {
+  margin-top: 40px;
+}
+
+button {
+  background: gold;
+  border: none;
+  padding: 15px 30px;
+  margin: 15px;
+  font-size: 18px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #ffd700;
+}
+
+.card {
+  background: white;
+  color: black;
+  padding: 12px;
+  margin: 10px auto;
+  width: 260px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+#game {
+  display: none;
+  margin-top: 30px;
+}
+
+#multiplayer {
+  display: none;
+  margin-top: 30px;
+}
+</style>
 </head>
 
 <body>
 
 <h1>🏰 Moods Managed</h1>
+<h2>Choose Mode</h2>
 
-<div id="game">
-
-  <div id="modeScreen">
-    <h2>Choose Mode</h2>
-    <button onclick="startSingle()">🎮 Single Player</button>
-    <button onclick="startMulti()">🌐 Multiplayer</button>
-    <button onclick="startStory()">🏰 Story Mode</button>
-  </div>
-
-  <div id="joinScreen" style="display:none;">
-    <input id="nameInput" placeholder="Your name..." />
-    <button onclick="joinGame()">Join</button>
-  </div>
-
-  <div id="scenario"></div>
-  <div id="cards"></div>
-  <p id="info"></p>
-
+<!-- ✅ MENU -->
+<div id="menu" class="menu">
+  <button onclick="startStory()">🏰 Story Mode</button>
+  <button onclick="startSingle()">🎮 Single Player</button>
+  <button onclick="startMulti()">🌐 Multiplayer</button>
 </div>
 
-<!-- ✅ ✅ ✅ THIS IS THE CORRECT LINE -->
-<script src="script
+<!-- ✅ GAME SCREEN -->
+<div id="game">
+  <div id="stats"></div>
+  <div id="scenario"></div>
+  <div id="cards"></div>
+</div>
+
+<!-- ✅ MULTIPLAYER SCREEN -->
+<div id="multiplayer">
+  <h2>🌐 Multiplayer Mode</h2>
+</div>
+
+<script>
+// ✅ THESE FUNCTIONS NOW WORK (JS IS LOADED PROPERLY)
+
+function startStory() {
+  startGame();
+}
+
+function startSingle() {
+  startGame();
+}
+
+function startGame() {
+  document.getElementById("menu").style.display = "none";
+  document.getElementById("game").style.display = "block";
+
+  // ✅ comes from game.js
+  nextScenario();
+}
+
+function startMulti() {
+  document.getElementById("menu").style.display = "none";
+  document.getElementById("multiplayer").style.display = "block";
+}
+</script>
+
 </body>
 </html>
-<html>
+``
