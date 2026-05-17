@@ -31,6 +31,7 @@
       padding: 20px;
       border-radius: 20px;
       margin-bottom: 20px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.7);
     }
 
     .card {
@@ -49,7 +50,6 @@
 
       cursor: pointer;
 
-      transform-style: preserve-3d;
       transition: all 0.3s ease;
 
       box-shadow:
@@ -65,7 +65,7 @@
     }
 
     .card:active {
-      transform: scale(1.3) rotateY(20deg);
+      transform: scale(1.3);
     }
 
     #info {
@@ -103,9 +103,10 @@
     <h2>Choose Mode</h2>
     <button onclick="startSingle()">🎮 Single Player</button>
     <button onclick="startMulti()">🌐 Multiplayer</button>
+    <button onclick="startStory()">🏰 Story Mode</button>
   </div>
 
-  <!-- NAME INPUT -->
+  <!-- JOIN -->
   <div id="joinScreen" style="display:none;">
     <h2>Enter your name</h2>
     <input id="nameInput" placeholder="Your name..." />
@@ -121,7 +122,7 @@
 
 </div>
 
-<!-- ✅ THIS LINE MUST BE EXACT -->
+<!-- ✅ CRITICAL LINE -->
 <script src="/script.js"></script>
 
 </body>
