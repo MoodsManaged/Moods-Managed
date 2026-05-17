@@ -4,10 +4,9 @@
   <title>Moods Managed</title>
 
   <style>
-    
     body {
       margin: 0;
-      font-family: "Georgia", serif;
+      font-family: Georgia, serif;
       background: radial-gradient(circle at top, #3a3d7c, #12132b);
       color: white;
       text-align: center;
@@ -50,10 +49,11 @@
       box-shadow: 0 0 10px black;
       transition: 0.2s;
       animation: float 3s ease-in-out infinite;
+      perspective: 1000px;
     }
 
     .card:hover {
-      transform: scale(1.1);
+      transform: rotateY(10deg) scale(1.1);
       background: #7b6cff;
     }
 
@@ -76,7 +76,6 @@
       border-radius: 15px;
     }
 
-    /* Magical sparkles background */
     #sparkles {
       position: fixed;
       width: 100%;
@@ -91,8 +90,8 @@
       from { background-position: 0 0; }
       to { background-position: 200px 200px; }
     }
-
   </style>
+
 </head>
 
 <body>
@@ -118,11 +117,3 @@
 
 </body>
 </html>
-.card {
-  perspective: 1000px;
-}
-
-.card:hover {
-  transform: rotateY(10deg) scale(1.1);
-}
-``
