@@ -1,7 +1,4 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Moods Managed</title>
+<!DOCTYPE html><!DOCTYPEoods Managed</title>
 
   <style>
     body {
@@ -45,6 +42,8 @@
       cursor: pointer;
       transition: 0.3s;
       box-shadow: 0 10px 20px black;
+      padding: 10px;
+      text-align: center;
     }
 
     .card:hover {
@@ -59,6 +58,7 @@
       border: none;
       background: gold;
       cursor: pointer;
+      font-size: 16px;
     }
 
     #stats {
@@ -76,9 +76,19 @@
 
 <div id="game">
 
+  <!-- ✅ ALL MODES BACK -->
   <div id="modeScreen">
     <h2>Choose Mode</h2>
+    <button onclick="startSingle()">🎮 Single Player</button>
+    <button onclick="startMulti()">🌐 Multiplayer</button>
     <button onclick="startStory()">🏰 Story Mode</button>
+  </div>
+
+  <!-- Multiplayer name input -->
+  <div id="joinScreen" style="display:none;">
+    <h2>Enter your name</h2>
+    <input id="nameInput" placeholder="Your name..." />
+    <button onclick="joinGame()">Join</button>
   </div>
 
   <div id="stats"></div>
@@ -92,6 +102,10 @@
 
 </div>
 
-script.js
+<!-- ✅ THIS IS THE FIX (REAL SCRIPT TAG) -->
+<script src="script.js"></script>
+
 </body>
 </html>
+<html>
+<head>
