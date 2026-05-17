@@ -1,70 +1,90 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Moods Managed background: radial-gradient(circle, #2c2f6b, #0d0f2e);<title>Moods Managed</title>
-  color: white;
-  text-align: center;
-}
+  <title>Moods Managed</title>
 
-h1 {
-  margin-top: 60px;
-  font-size: 55px;
-  color: gold;
-}
+  <style>
+  body {
+    background: radial-gradient(circle, #2c2f6b, #0d0f2e);
+    color: white;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    margin: 0;
+  }
 
-/* ROLE BUTTONS */
-button {
-  background: gold;
-  border: none;
-  padding: 15px;
-  margin: 10px;
-  font-size: 18px;
-  border-radius: 10px;
-  cursor: pointer;
-}
+  h1 {
+    margin-top: 70px;
+    font-size: 65px;
+    color: gold;
+    text-shadow: 0 0 25px gold;
+  }
 
-/* GAME */
-#game {
-  display: none;
-}
+  h2 {
+    margin-top: 10px;
+  }
 
-/* CARDS */
-#cards {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  margin-top: 30px;
-  flex-wrap: wrap;
-}
+  .role-button {
+    background: linear-gradient(145deg, #2a2f85, #1b1d47);
+    border: none;
+    padding: 20px;
+    margin: 15px;
+    font-size: 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    color: white;
+    width: 220px;
+    box-shadow: 0 0 20px rgba(255,215,0,0.4);
+    transition: 0.2s;
+  }
 
-.card {
-  background: #1b1d47;
-  padding: 20px;
-  border-radius: 12px;
-  width: 200px;
-  cursor: pointer;
-}
+  .role-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 40px gold;
+  }
 
-.card:hover {
-  transform: scale(1.05);
-}
+  #game {
+    display: none;
+  }
 
-.avatar {
-  font-size: 30px;
-  margin-bottom: 10px;
-}
-</style>
+  #cards {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin: 40px;
+    flex-wrap: wrap;
+  }
 
+  .card {
+    background: linear-gradient(145deg, #23256b, #1b1d47);
+    width: 230px;
+    padding: 25px;
+    border-radius: 20px;
+    cursor: pointer;
+    box-shadow: 0 0 25px rgba(255,215,0,0.4);
+    transition: 0.2s;
+  }
+
+  .card:hover {
+    transform: scale(1.08);
+    box-shadow: 0 0 50px gold;
+  }
+
+  .avatar {
+    font-size: 40px;
+    margin-bottom: 10px;
+  }
+  </style>
 </head>
 
 <body>
 
 <h1>🏰 Moods Managed</h1>
+<h2>Choose Your Role</h2>
 
 <div id="menu">
-  <button onclick="startGame('knight')">⚔️ Knight</button>
-  <button onclick="startGame('mage')">🧙 Mage</button>
-  <button onclick="startGame('dragon')">🐉 Dragon</button>
+  <button class="role-button" onclick="startGame('knight')">⚔️ Knight</button>
+  <button class="role-button" onclick="startGame('mage')">🧙 Mage</button>
+  <button class="role-button" onclick="startGame('dragon')">🐉 Dragon</button>
 </div>
 
 <div id="game">
@@ -77,152 +97,90 @@ button {
 let level = 1;
 let role = "";
 
-// ✅ START
-function startGame(r) {
-  role = r;
-  level = 1;
+const roles = {
+  knight: { name: "Knight", emoji: "⚔️" },
+  mage: { name: "Mage", emoji: "🧙‍♂️" },
+  dragon: { name: "Dragon", emoji: "🐉" }
+};
 
+const emotions = {
+  angry: "😡",
+  sad: "😢",
+  afraid: "😱"
+};
+
+function startGame(selected) {
+  role = selected;
+  level = 1;
   document.getElementById("menu").style.display = "none";
   document.getElementById("game").style.display = "block";
-
   nextScenario();
 }
 
-// ✅ MAIN LOOP
 function nextScenario() {
   const s = generateScenario();
 
-  document.getElementById("scenario").innerHTML =
-    "<h2>" + s.text + "</h2>" +
-    "<p>" + s.emoji + " You feel " + s.feeling + "</p>" +
-    "<p>💭 What do you do first?</p>";
+  document.getElementById("scenario").innerHTML = `
+    <h2>${s.text}</h2>
+    <p>${emotions[s.feeling]} You feel ${s.feeling}</p>
+    <p>💭 What do you do FIRST?</p>
+  `;
 
-  document.getElementById("stats").innerText =
-    role + " | Level " + level;
+  document.getElementById("stats").innerHTML = `
+    ${roles[role].emoji} ${roles[role].name} | ⭐ Level ${level}
+  `;
 
   const container = document.getElementById("cards");
   container.innerHTML = "";
 
-  // ✅ PROCESS STEP
-  s.process.forEach(choice => {
+  ["Pause and breathe", "Name your feeling", "Take time to think"]
+  .forEach(choice => {
     const el = document.createElement("div");
     el.className = "card";
-
-    el.innerHTML =
-      "<div class='avatar'>🧠</div>" +
-      "<div>" + choice + "</div>";
-
+    el.innerHTML = `
+      <div class="avatar">🧠</div>
+      <div>${choice}</div>
+    `;
     el.onclick = () => showDecision(s);
-
     container.appendChild(el);
   });
 }
 
-// ✅ DECISION STEP
 function showDecision(s) {
   const container = document.getElementById("cards");
   container.innerHTML = "";
 
-  document.getElementById("scenario").innerHTML +=
-    "<p>✅ You paused. Now what do you do?</p>";
-
-  s.good.forEach(choice => createCard(choice, true));
-  s.bad.forEach(choice => createCard(choice, false));
+  s.good.forEach(c => createCard(c, true));
+  s.bad.forEach(c => createCard(c, false));
 }
 
-// ✅ CARD
 function createCard(text, good) {
   const el = document.createElement("div");
   el.className = "card";
-
-  el.innerHTML =
-    "<div class='avatar'>" + (good ? "✨" : "⚠️") + "</div>" +
-    "<div>" + text + "</div>";
+  el.innerHTML = `
+    <div class="avatar">${good ? "✨" : "⚠️"}</div>
+    <div>${text}</div>
+  `;
 
   el.onclick = () => {
     if (good) level++;
-
-    showFeedback(
-      good
-        ? "✨ Good choice — you handled your emotion safely"
-        : "💭 That might make things harder"
-    );
+    nextScenario();
   };
 
   document.getElementById("cards").appendChild(el);
 }
 
-// ✅ FEEDBACK
-function showFeedback(msg) {
-  const el = document.createElement("div");
-  el.innerText = msg;
-  el.style.marginTop = "15px";
-
-  document.getElementById("cards").appendChild(el);
-
-  setTimeout(nextScenario, 1400);
-}
-
-// ✅ GENERATOR (therapy-based)
 function generateScenario() {
-  const feelings = [
-    { name: "angry", emoji: "😡" },
-    { name: "sad", emoji: "😢" },
-    { name: "afraid", emoji: "😱" }
-  ];
-
-  const situations = {
-    knight: [
-      "you protect villagers in danger",
-      "you face an enemy in battle",
-      "you feel pressure to lead others"
-    ],
-    mage: [
-      "your spell failed in front of others",
-      "you are learning something difficult",
-      "someone criticizes your magic"
-    ],
-    dragon: [
-      "someone tried to take your treasure",
-      "intruders enter your cave",
-      "you feel a wave of anger rising"
-    ]
-  };
-
-  const f = feelings[Math.floor(Math.random() * feelings.length)];
+  const feelings = ["angry", "sad", "afraid"];
 
   return {
-    text: "As a " + role + ", " +
-      situations[role][Math.floor(Math.random() * situations[role].length)],
-
-    feeling: f.name,
-    emoji: f.emoji,
-
-    process: [
-      "Pause and take a deep breath",
-      "Notice your feeling",
-      "Give yourself time"
-    ],
-
-    good: [
-      "Stay calm and think",
-      "Choose a safe action",
-      "Stay in control"
-    ],
-
-    bad: [
-      "React instantly",
-      "Let the feeling take over",
-      "Lose control"
-    ]
+    text: "A challenge appears...",
+    feeling: feelings[Math.floor(Math.random()*3)],
+    good: ["Stay calm", "Think clearly"],
+    bad: ["React instantly", "Lose control"]
   };
 }
 </script>
 
 </body>
 </html>
-
-<style>
-body {
-  margin: 0;
-  font-family: Arial;
