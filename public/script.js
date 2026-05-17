@@ -1,21 +1,38 @@
 const socket = new WebSocket("wss://moods-managed.onrender.com/");
 
 let playerId = null;
+let playerName = "";
 let currentMessenger = null;
+
+// Join game
+function joinGame() {
+  const input = document.getElementById("nameInput");
+  playerName = input.value || "Player";
+
+  document.getElementById("joinScreen").style.display = "none";
+  document.getElementById("info").textContent = "Connecting...";
+}
 
 // Connect
 socket.onopen = () => {
   console.log("✅ Connected to server");
 };
 
-// Receive data
+// Receive messages
 socket.onmessage = (event) => {
   const data = JSON.parse(event.data);
 
   if (data.type === "init") {
     playerId = data.id;
+
     document.getElementById("info").textContent =
-      "You are Player " + playerId;
+      "🎮 You are " + playerName + " (Player " + playerId + ")";
+
+    // Send name to server
+    socket.send(JSON.stringify({
+      type: "join",
+      name: playerName
+    }));
   }
 
   if (data.type === "newRound") {
@@ -66,21 +83,19 @@ function renderCards() {
   });
 }
 
-// Send card
+// Submit card
 function submitCard(card) {
-  socket.send(
-    JSON.stringify({
-      type: "submitCard",
-      playerId: playerId,
-      card: card
-    })
-  );
+  socket.send(JSON.stringify({
+    type: "submitCard",
+    playerId: playerId,
+    card: card
+  }));
 
   document.getElementById("cards").innerHTML =
     "<p>✅ Card submitted!</p>";
 }
 
-// Show submissions (for messenger)
+// Show submissions (messenger only)
 function showSubmissions(submissions) {
   const container = document.getElementById("cards");
   container.innerHTML = "<h3>Choose a winner:</h3>";
@@ -98,12 +113,10 @@ function showSubmissions(submissions) {
 
 // Choose winner
 function chooseWinner(id) {
-  socket.send(
-    JSON.stringify({
-      type: "chooseWinner",
-      winnerId: id
-    })
-  );
+  socket.send(JSON.stringify({
+    type: "chooseWinner",
+    winnerId: id
+  }));
 }
 
 // Show results

@@ -41,6 +41,11 @@
       cursor: pointer;
     }
 
+    .card:hover {
+      background: #7b6cff;
+      transform: scale(1.05);
+    }
+
     #info {
       margin: 15px;
       font-size: 20px;
@@ -53,6 +58,22 @@
       padding: 15px;
       border-radius: 15px;
     }
+
+    input {
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+    }
+
+    button {
+      padding: 10px 15px;
+      margin-left: 10px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      background: gold;
+    }
   </style>
 </head>
 
@@ -62,20 +83,26 @@
 
 <div id="game">
 
-  <p id="info">Waiting for players...</p>
+  <!-- Join screen -->
+  <div id="joinScreen">
+    <h2>Enter your name</h2>
+    <input id="nameInput" placeholder="Your name..." />
+    <button onclick="joinGame()">Join Game</button>
+  </div>
+
+  <p id="info">Waiting to join...</p>
 
   <div id="scenario"></div>
 
   <h3>Your Cards</h3>
   <div id="cards"></div>
 
-  <div id="submissions"></div>
   <div id="scoreboard"></div>
 
 </div>
 
-<!-- ✅ VERY IMPORTANT LINE -->
 <script src="/script.js"></script>
 
 </body>
 </html>
+``
