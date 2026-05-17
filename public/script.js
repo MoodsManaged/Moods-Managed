@@ -1,32 +1,26 @@
-alert("SCRIPT IS RUNNING ✅");
-// ✅ Connect to your LIVE server
-const socket = new WebSocket("wss://moods-managed.onrender.com");
+alert("JS IS RUNNING ✅");
 
-let playerId = null;
-let currentMessenger = null;
+// Connect to server
+const socket = new WebSocket("wss://moods-managed.onrender.com/");
 
-// ✅ Connection status (for debugging)
+// Test connection
 socket.onopen = () => {
-  console.log("✅ Connected to server!");
+  console.log("✅ Connected to server");
 };
 
-socket.onerror = (err) => {
-  console.error("❌ Connection error:", err);
-};
-
-socket.onclose = () => {
-  console.log("⚠️ Disconnected from server");
-};
-
-// ✅ Handle messages from server
+// Test message
 socket.onmessage = (event) => {
-  const data = JSON.parse(event.data);
-  console.log("📩 Received:", data);
+  console.log("📩 Message received:", event.data);
+};
 
-  if (data.type === "init") {
-    playerId = data.id;
-    console.log("🎮 You are player", playerId);
-  }
+// BASIC TEST UI (so we KNOW JS works)
+document.getElementById("scenario").innerHTML = `
+  <h2>✅ JS is working!</h2>
+  <p>If you see this, the problem is FIXED.</p>
+`;
 
-  if (data.type === "newRound") {
-    currentMessenger = data.messenger;
+document.getElementById("cards").innerHTML = `
+  <div class="card">Test Card 1</div>
+  <div class="card">Test Card 2</div>
+`;
+``
