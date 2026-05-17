@@ -8,7 +8,8 @@
     background: radial-gradient(circle, #2c2f6b, #0d0f2e);
     color: white;
     text-align: center;
-    font-family: Arial;
+    font-family: Arial, sans-serif;
+    margin: 0;
   }
 
   h1 {
@@ -16,6 +17,15 @@
     font-size: 55px;
     color: gold;
     text-shadow: 0 0 25px gold;
+  }
+
+  h2 {
+    margin-top: 15px;
+  }
+
+  #stats {
+    margin-top: 10px;
+    font-size: 18px;
   }
 
   #cards {
@@ -27,11 +37,12 @@
   }
 
   .card {
-    background:#1b1d47;
+    background: #1b1d47;
     width: 230px;
     padding: 20px;
     border-radius: 15px;
     cursor: pointer;
+    transition: 0.2s;
   }
 
   .card:hover {
@@ -43,6 +54,9 @@
     margin: 10px;
     border-radius: 15px;
     cursor: pointer;
+    background: #2a2f85;
+    color: white;
+    border: none;
   }
   </style>
 </head>
@@ -70,6 +84,10 @@ let level = 1;
 let unrest = 0;
 
 let usedScenarios = [];
+let usedGood = [];
+let usedBad = [];
+let usedProcess = [];
+let usedChoices = [];
 
 const roles = {
   knight: "⚔️ Knight",
@@ -79,42 +97,58 @@ const roles = {
 
 const reactions = {
   knight: {
-    good: "🛡️ I steady myself and act with control.",
-    bad: "⚠️ I rush forward without thinking!"
+    good: "🛡️ I steady myself and lead with control.",
+    bad: "⚠️ I act too quickly without thinking."
   },
   mage: {
-    good: "🔮 I focus and regain control of my magic.",
-    bad: "💥 My magic spins out of control!"
+    good: "🔮 I focus and regain balance.",
+    bad: "💥 My energy feels out of control."
   },
   dragon: {
     good: "🐉 I breathe slowly... my fire calms.",
-    bad: "🔥 My anger explodes uncontrollably!"
+    bad: "🔥 My anger bursts out uncontrollably."
   }
 };
 
-const feedbackGood = [
-  "That helps me pause instead of reacting right away.",
-  "That gives me time to think about my feeling.",
-  "That helps me stay in control of myself.",
-  "That’s a strong way to handle what I’m feeling."
+const goodFeedback = [
+  "That helps me pause and think first.",
+  "That gives me space to understand what I’m feeling.",
+  "That helps me stay in control.",
+  "That’s a thoughtful way to handle this.",
+  "That supports managing my feelings safely.",
+  "That helps me respond instead of react."
 ];
 
-const feedbackBad = [
-  "That might make my feeling stronger.",
-  "That could make things harder for me.",
-  "That doesn’t give me time to think first.",
-  "That might lead me to lose control."
+const badFeedback = [
+  "That might make things harder for me.",
+  "That could make my feeling stronger.",
+  "That doesn’t give me time to think.",
+  "That might lead to losing control.",
+  "That doesn’t help manage what I’m feeling.",
+  "That could make the situation worse."
 ];
 
-function random(arr) {
-  return arr[Math.floor(Math.random() * arr.length)];
+function randomNoRepeat(pool, used) {
+  let available = pool.filter(p => !used.includes(p));
+  if (available.length === 0) {
+    used.length = 0;
+    available = pool;
+  }
+  const choice = available[Math.floor(Math.random() * available.length)];
+  used.push(choice);
+  return choice;
 }
 
 function startGame(r) {
   role = r;
   level = 1;
   unrest = 0;
+
   usedScenarios = [];
+  usedGood = [];
+  usedBad = [];
+  usedProcess = [];
+  usedChoices = [];
 
   document.getElementById("menu").style.display = "none";
   document.getElementById("game").style.display = "block";
@@ -126,8 +160,8 @@ function nextScenario() {
   if (unrest >= 5) {
     document.getElementById("game").innerHTML = `
       <h1>💥 I caused too much unrest...</h1>
-      <p>I overthrow the kingdom 👑</p>
-      <p>But now… I am trapped here forever.</p>
+      <p>I overthrew the kingdom 👑</p>
+      <p>Now I am trapped here forever.</p>
     `;
     return;
   }
@@ -175,12 +209,12 @@ function createCard(text, type) {
 
     if (type === "best") {
       level++;
-      msg = random(feedbackGood);
+      msg = randomNoRepeat(goodFeedback, usedGood);
     } else if (type === "okay") {
-      msg = "That might help a little, but I could choose something stronger.";
+      msg = "That might help a little, but there could be a stronger option.";
     } else {
       unrest++;
-      msg = random(feedbackBad);
+      msg = randomNoRepeat(badFeedback, usedBad);
     }
 
     showFeedback(msg, reactions[role][type === "worst" ? "bad" : "good"]);
@@ -191,10 +225,7 @@ function createCard(text, type) {
 
 function showFeedback(text, reaction) {
   const msg = document.createElement("div");
-  msg.innerHTML = `
-    <p>${reaction}</p>
-    <p>${text}</p>
-  `;
+  msg.innerHTML = `<p>${reaction}</p><p>${text}</p>`;
   msg.style.marginTop = "20px";
 
   document.getElementById("cards").appendChild(msg);
@@ -203,44 +234,59 @@ function showFeedback(text, reaction) {
 }
 
 function generateScenario() {
-  const all = [
 
-    { text: "I dropped everything I was carrying and now I feel overwhelmed.", feeling:"sad", emoji:"😢" },
-    { text: "I feel nervous because I have to do something important in front of others.", feeling:"afraid", emoji:"😱" },
-    { text: "Someone took something important from me and I feel really angry.", feeling:"angry", emoji:"😡" },
-    { text: "I made a mistake and now I feel embarrassed and upset.", feeling:"sad", emoji:"😢" },
-    { text: "Something unexpected happened and now I feel scared.", feeling:"afraid", emoji:"😱" },
-    { text: "Someone is not listening to me and I feel frustrated.", feeling:"angry", emoji:"😡" }
-
+  const scenarios = [
+    { text: "Everything is happening at once and I feel overwhelmed.", feeling:"overwhelmed", emoji:"😵‍💫" },
+    { text: "No one is listening to me and I feel frustrated.", feeling:"frustrated", emoji:"😤" },
+    { text: "I need to do something important and I feel nervous.", feeling:"nervous", emoji:"😰" },
+    { text: "Something didn’t go how I hoped and I feel disappointed.", feeling:"disappointed", emoji:"😞" },
+    { text: "Something sudden happened and I feel scared.", feeling:"afraid", emoji:"😱" },
+    { text: "I made a mistake and now I feel upset.", feeling:"sad", emoji:"😢" }
   ];
 
-  let available = all.filter(s => !usedScenarios.includes(s.text));
-
+  let available = scenarios.filter(s => !usedScenarios.includes(s.text));
   if (available.length === 0) {
     usedScenarios = [];
-    available = all;
+    available = scenarios;
   }
 
-  const chosen = random(available);
+  const chosen = available[Math.floor(Math.random() * available.length)];
   usedScenarios.push(chosen.text);
+
+  const processOptions = [
+    ["Pause and take a breath", "Notice what I’m feeling", "Give myself time to think"],
+    ["Slow down my body", "Name the feeling", "Take a moment"],
+    ["Stop and breathe", "Recognize what’s happening", "Think before acting"]
+  ];
+
+  const choiceOptions = [
+    [
+      { text:"Take a breath before acting", type:"best" },
+      { text:"Talk to someone I trust", type:"best" },
+      { text:"Ignore it", type:"okay" },
+      { text:"React immediately", type:"worst" },
+      { text:"Blame someone else", type:"worst" }
+    ],
+    [
+      { text:"Pause and think it through", type:"best" },
+      { text:"Ask for help", type:"best" },
+      { text:"Push the feeling away", type:"okay" },
+      { text:"Act without thinking", type:"worst" },
+      { text:"Shout right away", type:"worst" }
+    ]
+  ];
+
+  const process = randomNoRepeat(processOptions, usedProcess);
+  const choices = randomNoRepeat(choiceOptions, usedChoices);
 
   return {
     ...chosen,
-    process: [
-      "Pause and take a breath",
-      "Notice what I’m feeling",
-      "Give myself time to think"
-    ],
-    choices: [
-      { text:"Think before I act", type:"best" },
-      { text:"Talk to someone I trust", type:"best" },
-      { text:"Ignore how I feel", type:"okay" },
-      { text:"React immediately", type:"worst" },
-      { text:"Blame someone else", type:"worst" }
-    ]
+    process,
+    choices
   };
 }
 </script>
 
 </body>
 </html>
+``
