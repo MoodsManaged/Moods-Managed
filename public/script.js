@@ -5,6 +5,7 @@ let level = 1;
 
 const socket = new WebSocket("wss://moods-managed.onrender.com/");
 
+// ✅ Emojis
 const emoji = {
   happy: "😊",
   sad: "😢",
@@ -13,6 +14,7 @@ const emoji = {
   afraid: "😱"
 };
 
+// ✅ CARD POOL
 const cardsPool = [
   "Give a hug",
   "Run away",
@@ -26,24 +28,32 @@ const cardsPool = [
   "Stay calm"
 ];
 
-// ✅ AI scenario generator
-const characters = ["dragon", "wizard", "knight", "robot", "villager"];
-const situations = [
-  "lost something important",
-  "found a magical treasure",
-  "is being chased",
-  "won a huge battle",
-  "made a big mistake",
-  "is alone in the forest",
-  "met a mysterious stranger"
-];
-const feelings = ["happy", "sad", "angry", "afraid", "calm"];
+// ✅ BETTER SCENARIOS (emotion matches story)
+const scenarios = [
+  { text: "You found a hidden treasure chest full of gold", feeling: "happy" },
+  { text: "You reunited with someone you deeply missed", feeling: "happy" },
 
-function generateScenario() {
-  return {
-    text: `A ${characters[Math.floor(Math.random()*characters.length)]} ${situations[Math.floor(Math.random()*situations.length)]}`,
-    feeling: feelings[Math.floor(Math.random()*feelings.length)]
-  };
+  { text: "You lost something that meant a lot to you", feeling: "sad" },
+  { text: "You said goodbye to someone important", feeling: "sad" },
+
+  { text: "Someone unfairly blamed you for something", feeling: "angry" },
+  { text: "Your hard work was completely ignored", feeling: "angry" },
+
+  { text: "You hear footsteps behind you in a dark forest", feeling: "afraid" },
+  { text: "You are about to face a powerful enemy", feeling: "afraid" },
+
+  { text: "You sit quietly by a peaceful lake at sunset", feeling: "calm" },
+  { text: "You are resting after a long journey", feeling: "calm" }
+];
+
+// ✅ SMART SELECT (no repeats)
+let shuffledScenarios = [];
+
+function getScenario() {
+  if (shuffledScenarios.length === 0) {
+    shuffledScenarios = [...scenarios].sort(() => Math.random() - 0.5);
+  }
+  return shuffledScenarios.pop();
 }
 
 // ✅ MODES
@@ -58,7 +68,7 @@ function startStory() {
   mode = "story";
   level = 1;
   document.getElementById("modeScreen").style.display = "none";
-  document.getElementById("info").textContent = "🏰 Story Mode Begins!";
+  document.getElementById("info").textContent = "🏰 Your story begins...";
   nextStory();
 }
 
@@ -97,38 +107,44 @@ socket.onmessage = (event) => {
   if (data.type === "roundResult") showResult(data.winner);
 };
 
-// ✅ SINGLE PLAYER
+// ✅ GAME FLOW
 function nextSingle() {
-  showScenario(generateScenario());
+  showScenario(getScenario());
 }
 
-// ✅ STORY MODE
 function nextStory() {
-  const s = generateScenario();
-
   document.getElementById("info").textContent =
-    `🏆 Level ${level}`;
-
-  showScenario(s);
+    `🌟 Level ${level}`;
+  showScenario(getScenario());
 }
 
-// ✅ DISPLAY
+// ✅ DISPLAY SCENARIO (FIRST PERSON ✅)
 function showScenario(s) {
   document.getElementById("scenario").innerHTML =
     `<h2>${s.text}</h2>
-     <p>${emoji[s.feeling]} ${s.feeling}</p>`;
+     <p><b>Your feeling:</b> ${emoji[s.feeling]} ${s.feeling}</p>`;
 
   renderCards(s.feeling);
 }
 
-// ✅ CARDS
+// ✅ CARDS MATCH EMOTION
 function getCards(feeling) {
-  return cardsPool
+  let filtered = cardsPool;
+
+  // Optional: bias cards based on emotion
+  if (feeling === "happy") filtered = ["Give a hug","Tell a joke","Laugh loudly"];
+  if (feeling === "sad") filtered = ["Cry softly","Walk away","Stay quiet"];
+  if (feeling === "angry") filtered = ["Shout loudly","Stomp away","Break something"];
+  if (feeling === "afraid") filtered = ["Run away","Hide quickly","Call for help"];
+  if (feeling === "calm") filtered = ["Take a deep breath","Sit quietly","Stay relaxed"];
+
+  return filtered
     .sort(() => Math.random() - 0.5)
     .slice(0, 4)
     .map(text => ({ text, mood: feeling }));
 }
 
+// ✅ RENDER CARDS
 function renderCards(feeling) {
   const container = document.getElementById("cards");
   container.innerHTML = "";
@@ -153,18 +169,19 @@ function renderCards(feeling) {
   });
 }
 
-// ✅ CARD ACTION
+// ✅ ACTION
 function chooseCard(card) {
+  document.getElementById("info").textContent =
+    `You choose to: ${card.text}`;
+
   if (mode === "single") {
-    document.getElementById("info").textContent =
-      `You chose: ${card.text}`;
     setTimeout(nextSingle, 1500);
   }
 
   if (mode === "story") {
     level++;
     document.getElementById("info").textContent =
-      "✨ Level up!";
+      "✨ You grow stronger...";
     setTimeout(nextStory, 1500);
   }
 
@@ -179,7 +196,7 @@ function chooseCard(card) {
   }
 }
 
-// ✅ MULTI RESULT
+// ✅ MULTI RESULTS
 function showSubmissions(subs) {
   const c = document.getElementById("cards");
   c.innerHTML = "<h3>Pick Winner</h3>";
