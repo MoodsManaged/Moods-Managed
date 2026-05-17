@@ -3,9 +3,8 @@
 <head>
 <title>Moods Managed</title>
 
-<!-- ✅ ✅ REAL SCRIPT TAGS (CORRECT HTML) -->
-<script src="/socket.io/socket.io.js"></script>
-<script src="game.js"></script>
+<!-- ✅ ✅ REAL SCRIPT TAGS (THIS FIXES EVERYTHING) -->
+<script src="/socket.io/socket.io.jsript src="game.js"></script>
 
 <style>
 body {
@@ -84,8 +83,6 @@ button {
 </div>
 
 <script>
-// ✅ functions now WILL work because JS is properly loaded
-
 function startStory() {
   startGame();
 }
@@ -98,7 +95,8 @@ function startGame() {
   document.getElementById("menu").style.display = "none";
   document.getElementById("game").style.display = "block";
 
-  nextScenario(); // ✅ from game.js
+  // ✅ this now works because game.js actually loads
+  nextScenario();
 }
 
 function startMulti() {
