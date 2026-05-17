@@ -3,6 +3,10 @@ const WebSocket = require("ws");
 
 const app = express();
 const server = app.listen(3000, () => {
+
+const server = app.listen(PORT, () => {
+  console.log("Server running");
+});
   console.log("http://localhost:3000");
 });
 
