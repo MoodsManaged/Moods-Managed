@@ -13,14 +13,19 @@
   }
 
   h1 {
-    margin-top: 70px;
-    font-size: 65px;
+    margin-top: 50px;
+    font-size: 55px;
     color: gold;
     text-shadow: 0 0 25px gold;
   }
 
   h2 {
     margin-top: 10px;
+  }
+
+  #stats {
+    margin-top: 10px;
+    font-size: 18px;
   }
 
   .role-button {
@@ -49,7 +54,7 @@
   #cards {
     display: flex;
     justify-content: center;
-    gap: 30px;
+    gap: 25px;
     margin: 40px;
     flex-wrap: wrap;
   }
@@ -96,6 +101,7 @@
 <script>
 let level = 1;
 let role = "";
+let unrest = 0;
 
 const roles = {
   knight: { name: "Knight", emoji: "⚔️" },
@@ -103,44 +109,71 @@ const roles = {
   dragon: { name: "Dragon", emoji: "🐉" }
 };
 
-const emotions = {
-  angry: "😡",
-  sad: "😢",
-  afraid: "😱"
+const reactions = {
+  knight: {
+    good: "🛡️ The knight steadies and leads with honor.",
+    bad: "⚠️ The knight rushes forward without thinking!"
+  },
+  mage: {
+    good: "🔮 The mage regains control of the magic.",
+    bad: "💥 Magic bursts wildly in all directions!"
+  },
+  dragon: {
+    good: "🐉 The dragon exhales slowly... the fire calms.",
+    bad: "🔥 The dragon’s fire spirals out of control!"
+  }
 };
+
+const feedbackGood = [
+  "That helps slow things down before reacting.",
+  "That gives the feeling space instead of taking over.",
+  "That’s a strong way to stay in control."
+];
+
+const feedbackBad = [
+  "That might make the feeling stronger.",
+  "That doesn’t give time to think.",
+  "That could lead to losing control."
+];
 
 function startGame(selected) {
   role = selected;
   level = 1;
+  unrest = 0;
+
   document.getElementById("menu").style.display = "none";
   document.getElementById("game").style.display = "block";
+
   nextScenario();
 }
 
 function nextScenario() {
+  checkUnrest();
+
   const s = generateScenario();
 
   document.getElementById("scenario").innerHTML = `
-    <h2>${s.text}</h2>
-    <p>${emotions[s.feeling]} You feel ${s.feeling}</p>
-    <p>💭 What do you do FIRST?</p>
+    <h2>🏰 ${s.text}</h2>
+    <p>${s.feelingEmoji} Someone feels <b>${s.feeling}</b></p>
+    <p>💭 What is the BEST first step?</p>
   `;
 
   document.getElementById("stats").innerHTML = `
-    ${roles[role].emoji} ${roles[role].name} | ⭐ Level ${level}
+    ${roles[role].emoji} ${roles[role].name} | ⭐ Level ${level} | ⚠️ Unrest ${unrest}
   `;
 
   const container = document.getElementById("cards");
   container.innerHTML = "";
 
-  ["Pause and breathe", "Name your feeling", "Take time to think"]
-  .forEach(choice => {
+  s.process.forEach(choice => {
     const el = document.createElement("div");
     el.className = "card";
+
     el.innerHTML = `
       <div class="avatar">🧠</div>
-      <div>${choice}</div>
+      <div>${choice.text}</div>
     `;
+
     el.onclick = () => showDecision(s);
     container.appendChild(el);
   });
@@ -150,34 +183,105 @@ function showDecision(s) {
   const container = document.getElementById("cards");
   container.innerHTML = "";
 
-  s.good.forEach(c => createCard(c, true));
-  s.bad.forEach(c => createCard(c, false));
+  document.getElementById("scenario").innerHTML += `
+    <p>✅ You helped them pause. Now choose a coping tool:</p>
+  `;
+
+  s.choices.forEach(choice => createCard(choice.text, choice.type));
 }
 
-function createCard(text, good) {
+function createCard(text, type) {
   const el = document.createElement("div");
   el.className = "card";
+
   el.innerHTML = `
-    <div class="avatar">${good ? "✨" : "⚠️"}</div>
+    <div class="avatar">${type === "best" ? "✨" : type === "okay" ? "🌀" : "⚠️"}</div>
     <div>${text}</div>
   `;
 
   el.onclick = () => {
-    if (good) level++;
-    nextScenario();
+    let msg = "";
+
+    if (type === "best") {
+      level++;
+      msg = random(feedbackGood);
+    } 
+    else if (type === "okay") {
+      msg = "That could help a bit, but there may be a stronger option.";
+    } 
+    else {
+      unrest++;
+      msg = random(feedbackBad);
+    }
+
+    showFeedback(msg, reactions[role][type === "worst" ? "bad" : "good"]);
   };
 
   document.getElementById("cards").appendChild(el);
 }
 
+function showFeedback(text, reaction) {
+  const msg = document.createElement("div");
+  msg.innerHTML = `
+    <p>${reaction}</p>
+    <p>${text}</p>
+  `;
+  msg.style.marginTop = "20px";
+
+  document.getElementById("cards").appendChild(msg);
+
+  setTimeout(nextScenario, 2000);
+}
+
+function checkUnrest() {
+  if (unrest >= 5) {
+    document.getElementById("game").innerHTML = `
+      <h1>💥 The Kingdom Falls</h1>
+      <p>You created too much unrest...</p>
+      <p>You overthrow the Royals 👑</p>
+      <p>But you are trapped in the kingdom forever.</p>
+    `;
+  }
+}
+
+function random(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
 function generateScenario() {
-  const feelings = ["angry", "sad", "afraid"];
+  const scenarios = [
+    "A villager drops their harvest and feels overwhelmed",
+    "A young knight is afraid before battle",
+    "A dragon becomes angry when someone enters its cave",
+    "A mage feels sad after failing a spell"
+  ];
+
+  const feelings = [
+    { name: "angry", emoji: "😡" },
+    { name: "sad", emoji: "😢" },
+    { name: "afraid", emoji: "😱" }
+  ];
+
+  const feeling = random(feelings);
 
   return {
-    text: "A challenge appears...",
-    feeling: feelings[Math.floor(Math.random()*3)],
-    good: ["Stay calm", "Think clearly"],
-    bad: ["React instantly", "Lose control"]
+    text: random(scenarios),
+    feeling: feeling.name,
+    feelingEmoji: feeling.emoji,
+
+    process: [
+      { text: "Pause and take a breath" },
+      { text: "Notice the feeling" },
+      { text: "Give yourself time to think" }
+    ],
+
+    choices: [
+      { text: "Stay calm and think first", type: "best" },
+      { text: "Talk to someone", type: "best" },
+      { text: "Ignore it", type: "okay" },
+      { text: "React immediately", type: "worst" },
+      { text: "Blame others", type: "worst" }
+    ]
   };
 }
 </script>
