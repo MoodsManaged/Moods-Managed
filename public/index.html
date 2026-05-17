@@ -1,13 +1,6 @@
-<!DOCTYPE html><>Moods Managed</title>
-
-<!-- ✅ load your game logic -->
-<script src="game.js"></script>
-
-<style>
-body {
-  margin: 0;
-  font-family: Arial;
-  background: radial-gradient(circle, #2c2f6b, #0d0f2e);
+<!DOCTYPE html>
+<html>
+<head #0d0f2e);<head>
   color: white;
   text-align: center;
 }
@@ -18,11 +11,6 @@ h1 {
   font-size: 65px;
   color: gold;
   text-shadow: 0 0 25px gold;
-}
-
-/* MENU */
-#menu {
-  margin-top: 30px;
 }
 
 /* ROLE BUTTONS */
@@ -46,15 +34,9 @@ h1 {
   box-shadow: 0 0 40px gold;
 }
 
-/* GAME AREA */
+/* GAME */
 #game {
   display: none;
-}
-
-/* STATS */
-#stats {
-  margin-top: 20px;
-  font-size: 20px;
 }
 
 /* SCENARIO */
@@ -62,7 +44,7 @@ h1 {
   margin-top: 25px;
 }
 
-/* ✅ HORIZONTAL CARD ROW */
+/* CARDS ROW */
 #cards {
   display: flex;
   justify-content: center;
@@ -71,7 +53,7 @@ h1 {
   flex-wrap: wrap;
 }
 
-/* ✅ ROBLOX STYLE CARDS */
+/* CARD */
 .card {
   background: linear-gradient(145deg, #23256b, #1b1d47);
   color: white;
@@ -99,12 +81,6 @@ h1 {
 .choice-text {
   font-size: 16px;
 }
-
-/* MULTIPLAYER */
-#multiplayer {
-  display: none;
-  margin-top: 40px;
-}
 </style>
 </head>
 
@@ -113,48 +89,186 @@ h1 {
 <h1>🏰 Moods Managed</h1>
 <h2>Choose Your Role</h2>
 
-<!-- ✅ FULL MENU -->
 <div id="menu">
-  <button class="role-button" onclick="startWithRole('knight')">
-    ⚔️ Knight
-  </button>
-
-  <button class="role-button" onclick="startWithRole('mage')">
-    🧙 Mage
-  </button>
-
-  <button class="role-button" onclick="startWithRole('dragon')">
-    🐉 Dragon
-  </button>
-
-  <br>
-
-  <button class="role-button" onclick="startMulti()">
-    🌐 Multiplayer
-  </button>
+  <button class="role-button" onclick="startGame('knight')">⚔️ Knight</button>
+  <button class="role-button" onclick="startGame('mage')">🧙 Mage</button>
+  <button class="role-button" onclick="startGame('dragon')">🐉 Dragon</button>
 </div>
 
-<!-- ✅ GAME -->
 <div id="game">
   <div id="stats"></div>
   <div id="scenario"></div>
   <div id="cards"></div>
 </div>
 
-<!-- ✅ MULTIPLAYER -->
-<div id="multiplayer">
-  <h2>🌐 Multiplayer Mode (coming next)</h2>
-</div>
-
 <script>
-function startMulti() {
+// ✅ GAME STATE
+let level = 1;
+let role = "";
+
+// ✅ ROLES
+const roles = {
+  knight: { name: "Knight", emoji: "⚔️" },
+  mage: { name: "Mage", emoji: "🧙‍♂️" },
+  dragon: { name: "Dragon", emoji: "🐉" }
+};
+
+// ✅ EMOTIONS
+const emotions = {
+  angry: "😡",
+  sad: "😢",
+  afraid: "😱"
+};
+
+// ✅ START GAME
+function startGame(selected) {
+  role = selected;
+  level = 1;
+
   document.getElementById("menu").style.display = "none";
-  document.getElementById("multiplayer").style.display = "block";
+  document.getElementById("game").style.display = "block";
+
+  nextScenario();
+}
+
+// ✅ MAIN LOOP
+function nextScenario() {
+  const s = generateScenario();
+
+  document.getElementById("scenario").innerHTML = `
+    <h2>${s.text}</h2>
+    <p>${emotions[s.feeling]} You feel ${s.feeling}</p>
+    <p>💭 What do you do FIRST?</p>
+  `;
+
+  document.getElementById("stats").innerHTML = `
+    ${roles[role].emoji} ${roles[role].name} | 🌟 Level ${level}
+  `;
+
+  const container = document.getElementById("cards");
+  container.innerHTML = "";
+
+  // ✅ PROCESSING STEP
+  const processChoices = [
+    "Pause and take a deep breath",
+    "Notice and name your feeling",
+    "Give yourself time to think"
+  ];
+
+  processChoices.forEach(choice => {
+    const el = document.createElement("div");
+    el.className = "card";
+
+    el.innerHTML = `
+      <div class="avatar">🧠</div>
+      <div class="choice-text">${choice}</div>
+    `;
+
+    el.onclick = () => showDecision(s);
+    container.appendChild(el);
+  });
+}
+
+// ✅ DECISION STEP
+function showDecision(s) {
+  const container = document.getElementById("cards");
+  container.innerHTML = "";
+
+  document.getElementById("scenario").innerHTML += `
+    <p>✅ You paused. Now what do you do?</p>
+  `;
+
+  s.good.forEach(choice => createCard(choice, true));
+  s.bad.forEach(choice => createCard(choice, false));
+}
+
+// ✅ CARD
+function createCard(text, good) {
+  const el = document.createElement("div");
+  el.className = "card";
+
+  el.innerHTML = `
+    <div class="avatar">${good ? "✨" : "⚠️"}</div>
+    <div class="choice-text">${text}</div>
+  `;
+
+  el.onclick = () => {
+    if (good) level++;
+
+    showFeedback(
+      good 
+        ? "✨ You handled that feeling safely" 
+        : "💭 That choice may make things harder"
+    );
+  };
+
+  document.getElementById("cards").appendChild(el);
+}
+
+// ✅ FEEDBACK
+function showFeedback(text) {
+  const msg = document.createElement("div");
+  msg.innerText = text;
+  msg.style.marginTop = "20px";
+
+  document.getElementById("cards").appendChild(msg);
+
+  setTimeout(nextScenario, 1500);
+}
+
+// ✅ INFINITE SCENARIOS (THERAPY-BASED)
+function generateScenario() {
+  const feelings = ["angry", "sad", "afraid"];
+
+  const situations = {
+    knight: [
+      "you are protecting villagers under attack",
+      "you feel pressure to lead others through danger",
+      "you face a powerful enemy",
+      "you made a mistake in battle"
+    ],
+    mage: [
+      "your spell failed in front of others",
+      "you feel unsure of your abilities",
+      "you struggle to learn a spell",
+      "someone criticizes you"
+    ],
+    dragon: [
+      "someone tried to take your treasure",
+      "you feel misunderstood",
+      "intruders enter your cave",
+      "you feel a surge of anger"
+    ]
+  };
+
+  return {
+    text: "As a " + roles[role].name + ", " +
+          situations[role][Math.floor(Math.random()*situations[role].length)],
+
+    feeling: feelings[Math.floor(Math.random() * feelings.length)],
+
+    good: [
+      "Pause and think before acting",
+      "Choose a calm response",
+      "Stay in control of your feelings",
+      "Act in a safe way"
+    ],
+
+    bad: [
+      "React instantly",
+      "Let emotions take over",
+      "Blame others",
+      "Lose control"
+    ]
+  };
 }
 </script>
 
 </body>
 </html>
+<title>Moods Managed</title>
 
-<html>
-<head>
+<style>
+body {
+  margin: 0;
+  font-family: Arial;
