@@ -23,10 +23,9 @@ h1 {
 
 h2 {
   margin-top: 20px;
-  font-size: 28px;
 }
 
-/* MENU BUTTONS */
+/* MENU */
 button {
   background: gold;
   border: none;
@@ -38,44 +37,43 @@ button {
   box-shadow: 0 0 10px gold;
 }
 
-button:hover {
-  transform: scale(1.05);
-}
-
-/* GAME AREA */
+/* GAME */
 #game {
   display: none;
-  margin-top: 30px;
 }
 
-/* BIG CARDS */
+/* ✅ GRID LAYOUT (THIS IS THE BIG CHANGE) */
+#cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  max-width: 1000px;
+  margin: 30px auto;
+}
+
+/* ✅ ROBLOX-STYLE CARDS */
 .card {
-  background: #fff;
+  background: white;
   color: black;
-  width: 300px;
-  padding: 20px;
-  margin: 15px auto;
-  border-radius: 20px;
+  padding: 25px;
+  border-radius: 15px;
   font-size: 18px;
   cursor: pointer;
 
-  box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
   transition: all 0.2s ease;
 }
 
 .card:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 35px gold;
+  transform: scale(1.07);
+  box-shadow: 0 0 40px gold;
 }
 
-/* SCENARIO TEXT */
-#scenario h2 {
-  font-size: 26px;
+/* emoji */
+.card span {
+  font-size: 30px;
+  display: block;
   margin-bottom: 10px;
-}
-
-#scenario p {
-  font-size: 22px;
 }
 </style>
 </head>
@@ -98,7 +96,7 @@ button:hover {
 </div>
 
 <div id="multiplayer" style="display:none;">
-  <h2>🌐 Multiplayer Mode (coming next)</h2>
+  <h2>🌐 Multiplayer Mode</h2>
 </div>
 
 <script>
@@ -116,4 +114,3 @@ function startMulti() {
 
 </body>
 </html>
-``

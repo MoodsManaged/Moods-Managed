@@ -1,11 +1,11 @@
 let level = 1;
 
 const emoji = {
-  happy: "😊",
+  good: "✨",
+  bad: "⚠️",
+  afraid: "😱",
   sad: "😢",
-  angry: "😡",
-  calm: "😌",
-  afraid: "😱"
+  angry: "😡"
 };
 
 const scenarios = [
@@ -13,39 +13,13 @@ const scenarios = [
     text: "You are a knight facing a dangerous dragon",
     feeling: "afraid",
     helpful: [
-      "Take a deep breath and stay steady",
-      "Think carefully before acting",
-      "Move back slowly to stay safe"
+      "Take a deep breath",
+      "Think before acting",
+      "Step back carefully"
     ],
     lessHelpful: [
-      "Run without looking",
+      "Run blindly",
       "Freeze completely"
-    ]
-  },
-  {
-    text: "Your spell failed in front of others",
-    feeling: "sad",
-    helpful: [
-      "Try again calmly",
-      "Ask someone for help",
-      "Remind yourself mistakes help you learn"
-    ],
-    lessHelpful: [
-      "Give up",
-      "Say you're bad at everything"
-    ]
-  },
-  {
-    text: "Someone took your treasure",
-    feeling: "angry",
-    helpful: [
-      "Take a breath",
-      "Think before reacting",
-      "Solve the problem calmly"
-    ],
-    lessHelpful: [
-      "Destroy everything",
-      "Yell uncontrollably"
     ]
   }
 ];
@@ -58,8 +32,8 @@ function nextScenario() {
     <p>${emoji[s.feeling]} ${s.feeling}</p>
   `;
 
-  const cards = document.getElementById("cards");
-  cards.innerHTML = "";
+  const container = document.getElementById("cards");
+  container.innerHTML = "";
 
   s.helpful.forEach(choice => createCard(choice, true));
   s.lessHelpful.forEach(choice => createCard(choice, false));
@@ -71,12 +45,14 @@ function nextScenario() {
 function createCard(text, good) {
   const el = document.createElement("div");
   el.className = "card";
-  el.innerText = text;
+
+  el.innerHTML = `
+    <span>${good ? "✨" : "⚠️"}</span>
+    ${text}
+  `;
 
   el.onclick = () => {
-    if (good) {
-      level++;
-    }
+    if (good) level++;
     nextScenario();
   };
 
