@@ -3,8 +3,6 @@
 <head>
 <title>Moods Managed</title>
 
-<!-- ✅ ✅ CORRECT SCRIPT TAGS -->
-<script src="/socket.io/socket.io.js"></script>
 <script src="game.js"></script>
 
 <style>
@@ -20,10 +18,6 @@ h1 {
   margin-top: 80px;
   font-size: 60px;
   color: gold;
-}
-
-h2 {
-  margin-top: 20px;
 }
 
 button {
@@ -70,7 +64,7 @@ button {
 </div>
 
 <div id="multiplayer">
-  <h2>Multiplayer Mode</h2>
+  <h2>Multiplayer Mode (coming next)</h2>
 </div>
 
 <script>
@@ -85,8 +79,7 @@ function startSingle() {
 function startGame() {
   document.getElementById("menu").style.display = "none";
   document.getElementById("game").style.display = "block";
-
-  nextScenario(); // ✅ NOW WORKS
+  nextScenario();
 }
 
 function startMulti() {

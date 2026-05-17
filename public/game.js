@@ -1,44 +1,61 @@
 let level = 1;
 
+const emoji = {
+  happy: "😊",
+  sad: "😢",
+  angry: "😡",
+  calm: "😌",
+  afraid: "😱"
+};
+
 const scenarios = [
   {
-    text: "You face a dragon",
-    choices: ["Stay calm", "Panic"],
-    good: 0
+    text: "You are a knight facing a dangerous dragon",
+    feeling: "afraid",
+    helpful: ["Take a deep breath", "Think before acting", "Move carefully"],
+    lessHelpful: ["Run blindly", "Freeze in fear"]
   },
   {
-    text: "Your spell failed",
-    choices: ["Try again", "Give up"],
-    good: 0
+    text: "Your spell failed in front of others",
+    feeling: "sad",
+    helpful: ["Try again calmly", "Ask for help", "Stay patient"],
+    lessHelpful: ["Give up", "Say you're bad"]
   },
   {
-    text: "You lost treasure",
-    choices: ["Think calmly", "Get angry"],
-    good: 0
+    text: "Someone took your treasure",
+    feeling: "angry",
+    helpful: ["Stay calm", "Think first", "Solve it peacefully"],
+    lessHelpful: ["Destroy everything", "Yell loudly"]
   }
 ];
 
 function nextScenario() {
   const s = scenarios[Math.floor(Math.random() * scenarios.length)];
 
-  document.getElementById("scenario").innerText = s.text;
+  document.getElementById("scenario").innerHTML = `
+    <h2>${s.text}</h2>
+    <p>${emoji[s.feeling]} ${s.feeling}</p>
+  `;
 
   const cards = document.getElementById("cards");
   cards.innerHTML = "";
 
-  s.choices.forEach((choice, i) => {
-    const el = document.createElement("div");
-    el.className = "card";
-    el.innerText = choice;
+  s.helpful.forEach(choice => createCard(choice, true));
+  s.lessHelpful.forEach(choice => createCard(choice, false));
 
-    el.onclick = () => {
-      if (i === s.good) level++;
-      nextScenario();
-    };
-
-    cards.appendChild(el);
-  });
-
-  document.getElementById("stats").innerText =
-    "Level: " + level;
+  document.getElementById("stats").innerText = "Level: " + level;
 }
+
+function createCard(text, good) {
+  const el = document.createElement("div");
+  el.className = "card";
+  el.innerText = text;
+
+  el.onclick = () => {
+    if (good) level++;
+    nextScenario();
+  };
+
+  document.getElementById("cards").appendChild(el);
+}
+``
