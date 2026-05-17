@@ -1,62 +1,61 @@
 let level = 1;
-let usedScenarios = [];let role = "";
-let finishedBase = false;
+let role = "";
+let usedIndexes = [];
 
-// ✅ ROLES
+// ✅ ROLE DATA
 const roles = {
   knight: { name: "Knight", emoji: "⚔️" },
   mage: { name: "Mage", emoji: "🧙‍♂️" },
   dragon: { name: "Dragon", emoji: "🐉" }
 };
 
-// ✅ BASE SCENARIOS (THERAPY CORE)
+// ✅ ROLE-LOCKED SCENARIOS
 const roleScenarios = {
   knight: [
     {
-      text: "You are a knight protecting villagers under attack",
-      good: ["Stay brave and lead", "Help others first"],
-      bad: ["Run away", "Focus only on yourself"]
+      text: "You are a knight protecting villagers from danger",
+      good: ["Stay brave and help", "Lead others to safety"],
+      bad: ["Run away", "Ignore them"]
     },
     {
-      text: "You face a dragon in battle",
+      text: "You face an enemy in battle",
       good: ["Stay calm and plan", "Defend wisely"],
-      bad: ["Charge blindly", "Panic"]
+      bad: ["Attack blindly", "Panic"]
     }
   ],
 
   mage: [
     {
-      text: "Your spell failed in front of others",
+      text: "You are a mage whose spell failed in front of others",
       good: ["Try again calmly", "Stay patient"],
-      bad: ["Give up", "Say you're not good"]
+      bad: ["Give up", "Say you're bad"]
     },
     {
-      text: "You study a difficult spell",
-      good: ["Focus and practice", "Take your time"],
-      bad: ["Rush", "Quit early"]
+      text: "You are learning a difficult new spell",
+      good: ["Practice slowly", "Focus carefully"],
+      bad: ["Quit early", "Rush"]
     }
   ],
 
   dragon: [
     {
-      text: "Someone took your treasure",
-      good: ["Stay calm", "Think before reacting"],
+      text: "You are a dragon protecting your treasure",
+      good: ["Stay calm and observe", "Act wisely"],
       bad: ["Burn everything", "Lose control"]
     },
     {
-      text: "Intruders enter your cave",
-      good: ["Observe carefully", "Protect wisely"],
-      bad: ["Attack blindly", "Panic"]
+      text: "You sense intruders near your cave",
+      good: ["Watch carefully", "Defend thoughtfully"],
+      bad: ["Attack without thinking", "Panic"]
     }
   ]
 };
 
-// ✅ START
+// ✅ START GAME
 function startWithRole(selected) {
   role = selected;
   level = 1;
-  usedScenarios = [];
-  finishedBase = false;
+  usedIndexes = [];
 
   document.getElementById("menu").style.display = "none";
   document.getElementById("game").style.display = "block";
@@ -64,30 +63,26 @@ function startWithRole(selected) {
   nextScenario();
 }
 
-// ✅ GET SCENARIO
+// ✅ GET UNIQUE SCENARIO
 function getScenario() {
-  if (!finishedBase) {
-    const list = roleScenarios[role];
+  const list = roleScenarios[role];
 
-    if (usedScenarios.length === list.length) {
-      finishedBase = true;
-      return null;
-    }
-
-    let s;
-    do {
-      s = list[Math.floor(Math.random() * list.length)];
-    } while (usedScenarios.includes(s));
-
-    usedScenarios.push(s);
-    return s;
+  // ✅ END GAME IF ALL USED
+  if (usedIndexes.length === list.length) {
+    return null;
   }
 
-  // ✅ AI-STYLE GENERATED SCENARIOS
-  return generateScene();
+  let index;
+
+  do {
+    index = Math.floor(Math.random() * list.length);
+  } while (usedIndexes.includes(index));
+
+  usedIndexes.push(index);
+  return list[index];
 }
 
-// ✅ LOAD
+// ✅ LOAD SCENARIO
 function nextScenario() {
   const s = getScenario();
 
@@ -111,7 +106,7 @@ function nextScenario() {
   s.bad.forEach(c => createCard(c, false));
 }
 
-// ✅ CARDS
+// ✅ CREATE CARD
 function createCard(text, good) {
   const el = document.createElement("div");
   el.className = "card";
@@ -132,63 +127,20 @@ function createCard(text, good) {
 // ✅ FEEDBACK
 function showFeedback(good) {
   const msg = document.createElement("div");
-  msg.innerText = good ? "✨ Good choice!" : "⚠️ Try another way next time";
+  msg.innerText = good ? "✨ Good choice!" : "⚠️ Try another path";
   msg.style.marginTop = "20px";
+  msg.style.fontSize = "18px";
 
   document.getElementById("cards").appendChild(msg);
 
   setTimeout(nextScenario, 1200);
 }
 
-// ✅ END SCREEN (THERAPEUTIC)
+// ✅ FINAL ENDING (NO RESTART LOOP)
 function showEnding() {
-  const game = document.getElementById("game");
-
-  game.innerHTML = `
-    <h1>🌟 Journey Complete</h1>
-    <p>You learned how to handle emotions as a ${roles[role].name}</p>
-    <p>Level reached: ${level}</p>
-    
-    <button onclick="startInfinite()">Continue Adventure</button>
-  `;
-}
-
-// ✅ CONTINUE → AI MODE
-function startInfinite() {
-  finishedBase = true;
-
   document.getElementById("game").innerHTML = `
-    <div id="stats"></div>
-    <div id="scenario"></div>
-    <div id="cards"></div>
+    <h1>🌟 Journey Complete</h1>
+    <p>You mastered emotional choices as a ${roles[role].name}</p>
+    <p>Final Level: ${level}</p>
   `;
-
-  nextScenario();
 }
-
-// ✅ AI-LIKE GENERATION (THERAPEUTIC)
-function generateScene() {
-  const feelings = ["angry", "sad", "afraid"];
-
-  const situations = [
-    "Someone challenges you",
-    "You fail at something important",
-    "You feel misunderstood",
-    "Something unexpected happens"
-  ];
-
-  return {
-    text: `As a ${roles[role].name}, ${situations[Math.floor(Math.random()*situations.length)]}`,
-    good: [
-      "Pause and think",
-      "Stay calm and reflect",
-      "Choose a safe response"
-    ],
-    bad: [
-      "React instantly",
-      "Blame others",
-      "Lose control"
-    ]
-  };
-}
-
