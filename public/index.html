@@ -7,16 +7,17 @@
     body {
       margin: 0;
       font-family: Georgia, serif;
-      background: radial-gradient(circle at top, #3a3d7c, #12132b);
+      background: radial-gradient(circle at center, #4a4fcf, #0d0f2a);
       color: white;
       text-align: center;
+      perspective: 1000px;
     }
 
     h1 {
       font-size: 48px;
       color: gold;
       margin-top: 20px;
-      text-shadow: 0 0 10px gold;
+      text-shadow: 0 0 20px gold;
     }
 
     #game {
@@ -30,20 +31,52 @@
       padding: 20px;
       border-radius: 20px;
       margin-bottom: 20px;
+      box-shadow:
+        0 0 20px rgba(0,0,0,0.8),
+        0 0 30px rgba(100,100,255,0.5);
     }
 
     .card {
-      background: #5a4fcf;
-      padding: 15px;
-      margin: 10px;
-      border-radius: 15px;
-      display: inline-block;
+      width: 140px;
+      height: 180px;
+      background: linear-gradient(145deg, #6d5cff, #3c3492);
+      border-radius: 20px;
+
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+
+      margin: 15px;
+      padding: 10px;
+
       cursor: pointer;
+
+      transform-style: preserve-3d;
+      transition: all 0.3s ease;
+
+      box-shadow:
+        0 10px 20px rgba(0,0,0,0.6),
+        inset 0 0 10px rgba(255,255,255,0.2);
+
+      animation: float 3s ease-in-out infinite;
     }
 
     .card:hover {
-      background: #7b6cff;
-      transform: scale(1.05);
+      transform: rotateY(15deg) rotateX(10deg) scale(1.1);
+      box-shadow:
+        0 20px 40px rgba(0,0,0,0.8),
+        0 0 20px gold;
+    }
+
+    .card:active {
+      transform: scale(1.3) rotateY(20deg);
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0px); }
     }
 
     #info {
@@ -83,7 +116,6 @@
 
 <div id="game">
 
-  <!-- Join screen -->
   <div id="joinScreen">
     <h2>Enter your name</h2>
     <input id="nameInput" placeholder="Your name..." />
@@ -105,4 +137,3 @@
 
 </body>
 </html>
-``
