@@ -9,39 +9,73 @@
 body {
   margin: 0;
   font-family: Arial;
-  background: linear-gradient(to bottom, #1b1d47, #0d0f2e);
+  background: radial-gradient(circle, #2c2f6b, #0d0f2e);
   color: white;
   text-align: center;
 }
 
 h1 {
   margin-top: 80px;
-  font-size: 60px;
+  font-size: 65px;
   color: gold;
+  text-shadow: 0 0 25px gold;
 }
 
+h2 {
+  margin-top: 20px;
+  font-size: 28px;
+}
+
+/* MENU BUTTONS */
 button {
   background: gold;
   border: none;
   padding: 15px 25px;
-  margin: 10px;
+  margin: 15px;
   font-size: 18px;
-  border-radius: 10px;
+  border-radius: 12px;
   cursor: pointer;
+  box-shadow: 0 0 10px gold;
 }
 
-.card {
-  background: white;
-  color: black;
-  padding: 10px;
-  margin: 10px auto;
-  width: 250px;
-  border-radius: 10px;
-  cursor: pointer;
+button:hover {
+  transform: scale(1.05);
 }
 
-#game, #multiplayer {
+/* GAME AREA */
+#game {
   display: none;
+  margin-top: 30px;
+}
+
+/* BIG CARDS */
+.card {
+  background: #fff;
+  color: black;
+  width: 300px;
+  padding: 20px;
+  margin: 15px auto;
+  border-radius: 20px;
+  font-size: 18px;
+  cursor: pointer;
+
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+  transition: all 0.2s ease;
+}
+
+.card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 35px gold;
+}
+
+/* SCENARIO TEXT */
+#scenario h2 {
+  font-size: 26px;
+  margin-bottom: 10px;
+}
+
+#scenario p {
+  font-size: 22px;
 }
 </style>
 </head>
@@ -52,8 +86,8 @@ button {
 <h2>Choose Mode</h2>
 
 <div id="menu">
-  <button onclick="startStory()">🏰 Story Mode</button>
-  <button onclick="startSingle()">🎮 Single Player</button>
+  <button onclick="startGame()">🏰 Story Mode</button>
+  <button onclick="startGame()">🎮 Single Player</button>
   <button onclick="startMulti()">🌐 Multiplayer</button>
 </div>
 
@@ -63,19 +97,11 @@ button {
   <div id="cards"></div>
 </div>
 
-<div id="multiplayer">
-  <h2>Multiplayer Mode (coming next)</h2>
+<div id="multiplayer" style="display:none;">
+  <h2>🌐 Multiplayer Mode (coming next)</h2>
 </div>
 
 <script>
-function startStory() {
-  startGame();
-}
-
-function startSingle() {
-  startGame();
-}
-
 function startGame() {
   document.getElementById("menu").style.display = "none";
   document.getElementById("game").style.display = "block";
@@ -90,3 +116,4 @@ function startMulti() {
 
 </body>
 </html>
+``

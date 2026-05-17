@@ -12,20 +12,41 @@ const scenarios = [
   {
     text: "You are a knight facing a dangerous dragon",
     feeling: "afraid",
-    helpful: ["Take a deep breath", "Think before acting", "Move carefully"],
-    lessHelpful: ["Run blindly", "Freeze in fear"]
+    helpful: [
+      "Take a deep breath and stay steady",
+      "Think carefully before acting",
+      "Move back slowly to stay safe"
+    ],
+    lessHelpful: [
+      "Run without looking",
+      "Freeze completely"
+    ]
   },
   {
     text: "Your spell failed in front of others",
     feeling: "sad",
-    helpful: ["Try again calmly", "Ask for help", "Stay patient"],
-    lessHelpful: ["Give up", "Say you're bad"]
+    helpful: [
+      "Try again calmly",
+      "Ask someone for help",
+      "Remind yourself mistakes help you learn"
+    ],
+    lessHelpful: [
+      "Give up",
+      "Say you're bad at everything"
+    ]
   },
   {
     text: "Someone took your treasure",
     feeling: "angry",
-    helpful: ["Stay calm", "Think first", "Solve it peacefully"],
-    lessHelpful: ["Destroy everything", "Yell loudly"]
+    helpful: [
+      "Take a breath",
+      "Think before reacting",
+      "Solve the problem calmly"
+    ],
+    lessHelpful: [
+      "Destroy everything",
+      "Yell uncontrollably"
+    ]
   }
 ];
 
@@ -43,7 +64,8 @@ function nextScenario() {
   s.helpful.forEach(choice => createCard(choice, true));
   s.lessHelpful.forEach(choice => createCard(choice, false));
 
-  document.getElementById("stats").innerText = "Level: " + level;
+  document.getElementById("stats").innerText =
+    "🌟 Level: " + level;
 }
 
 function createCard(text, good) {
@@ -52,10 +74,11 @@ function createCard(text, good) {
   el.innerText = text;
 
   el.onclick = () => {
-    if (good) level++;
+    if (good) {
+      level++;
+    }
     nextScenario();
   };
 
   document.getElementById("cards").appendChild(el);
 }
-``
