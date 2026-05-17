@@ -1,16 +1,20 @@
 <!DOCTYPE html>
 <html>
-<head #0d0f2e);<head>
+ font-family: Arial;<head>
+  background: radial-gradient(circle, #2c2f6b, #0d0f2e);
   color: white;
   text-align: center;
 }
 
-/* TITLE */
 h1 {
   margin-top: 70px;
   font-size: 65px;
   color: gold;
   text-shadow: 0 0 25px gold;
+}
+
+h2 {
+  margin-top: 15px;
 }
 
 /* ROLE BUTTONS */
@@ -24,7 +28,6 @@ h1 {
   cursor: pointer;
   color: white;
   width: 220px;
-
   box-shadow: 0 0 20px rgba(255,215,0,0.4);
   transition: all 0.2s ease;
 }
@@ -61,7 +64,6 @@ h1 {
   padding: 25px;
   border-radius: 20px;
   cursor: pointer;
-
   box-shadow: 0 0 25px rgba(255,215,0,0.4);
   transition: all 0.2s ease;
 }
@@ -77,11 +79,11 @@ h1 {
   margin-bottom: 10px;
 }
 
-/* TEXT */
 .choice-text {
   font-size: 16px;
 }
 </style>
+
 </head>
 
 <body>
@@ -102,25 +104,21 @@ h1 {
 </div>
 
 <script>
-// ✅ GAME STATE
 let level = 1;
 let role = "";
 
-// ✅ ROLES
 const roles = {
   knight: { name: "Knight", emoji: "⚔️" },
   mage: { name: "Mage", emoji: "🧙‍♂️" },
   dragon: { name: "Dragon", emoji: "🐉" }
 };
 
-// ✅ EMOTIONS
 const emotions = {
   angry: "😡",
   sad: "😢",
   afraid: "😱"
 };
 
-// ✅ START GAME
 function startGame(selected) {
   role = selected;
   level = 1;
@@ -131,7 +129,6 @@ function startGame(selected) {
   nextScenario();
 }
 
-// ✅ MAIN LOOP
 function nextScenario() {
   const s = generateScenario();
 
@@ -148,7 +145,6 @@ function nextScenario() {
   const container = document.getElementById("cards");
   container.innerHTML = "";
 
-  // ✅ PROCESSING STEP
   const processChoices = [
     "Pause and take a deep breath",
     "Notice and name your feeling",
@@ -161,7 +157,7 @@ function nextScenario() {
 
     el.innerHTML = `
       <div class="avatar">🧠</div>
-      <div class="choice-text">${choice}</div>
+      <div>${choice}</div>
     `;
 
     el.onclick = () => showDecision(s);
@@ -169,7 +165,6 @@ function nextScenario() {
   });
 }
 
-// ✅ DECISION STEP
 function showDecision(s) {
   const container = document.getElementById("cards");
   container.innerHTML = "";
@@ -182,14 +177,13 @@ function showDecision(s) {
   s.bad.forEach(choice => createCard(choice, false));
 }
 
-// ✅ CARD
 function createCard(text, good) {
   const el = document.createElement("div");
   el.className = "card";
 
   el.innerHTML = `
     <div class="avatar">${good ? "✨" : "⚠️"}</div>
-    <div class="choice-text">${text}</div>
+    <div>${text}</div>
   `;
 
   el.onclick = () => {
@@ -197,7 +191,7 @@ function createCard(text, good) {
 
     showFeedback(
       good 
-        ? "✨ You handled that feeling safely" 
+        ? "✨ You handled that feeling safely"
         : "💭 That choice may make things harder"
     );
   };
@@ -205,7 +199,6 @@ function createCard(text, good) {
   document.getElementById("cards").appendChild(el);
 }
 
-// ✅ FEEDBACK
 function showFeedback(text) {
   const msg = document.createElement("div");
   msg.innerText = text;
@@ -216,26 +209,22 @@ function showFeedback(text) {
   setTimeout(nextScenario, 1500);
 }
 
-// ✅ INFINITE SCENARIOS (THERAPY-BASED)
 function generateScenario() {
   const feelings = ["angry", "sad", "afraid"];
 
   const situations = {
     knight: [
       "you are protecting villagers under attack",
-      "you feel pressure to lead others through danger",
       "you face a powerful enemy",
       "you made a mistake in battle"
     ],
     mage: [
       "your spell failed in front of others",
       "you feel unsure of your abilities",
-      "you struggle to learn a spell",
-      "someone criticizes you"
+      "someone criticizes your magic"
     ],
     dragon: [
       "someone tried to take your treasure",
-      "you feel misunderstood",
       "intruders enter your cave",
       "you feel a surge of anger"
     ]
@@ -250,8 +239,8 @@ function generateScenario() {
     good: [
       "Pause and think before acting",
       "Choose a calm response",
-      "Stay in control of your feelings",
-      "Act in a safe way"
+      "Stay in control",
+      "Act safely"
     ],
 
     bad: [
@@ -271,4 +260,3 @@ function generateScenario() {
 <style>
 body {
   margin: 0;
-  font-family: Arial;
