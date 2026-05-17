@@ -36,7 +36,6 @@
       padding: 20px;
       border-radius: 20px;
       margin-bottom: 20px;
-      box-shadow: 0 0 15px black;
     }
 
     .card {
@@ -46,21 +45,11 @@
       border-radius: 15px;
       display: inline-block;
       cursor: pointer;
-      box-shadow: 0 0 10px black;
-      transition: 0.2s;
-      animation: float 3s ease-in-out infinite;
-      perspective: 1000px;
     }
 
     .card:hover {
-      transform: rotateY(10deg) scale(1.1);
+      transform: scale(1.1);
       background: #7b6cff;
-    }
-
-    @keyframes float {
-      0% { transform: translateY(0px); }
-      50% { transform: translateY(-10px); }
-      100% { transform: translateY(0px); }
     }
 
     #info {
@@ -75,44 +64,11 @@
       padding: 15px;
       border-radius: 15px;
     }
-
-    #sparkles {
-      position: fixed;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      background: radial-gradient(circle, rgba(255,255,255,0.2) 1px, transparent 1px);
-      background-size: 50px 50px;
-      animation: moveSparkles 10s linear infinite;
-    }
-
-    @keyframes moveSparkles {
-      from { background-position: 0 0; }
-      to { background-position: 200px 200px; }
-    }
   </style>
 
 </head>
 
 <body>
 
-<div id="sparkles"></div>
-
 <h1>🏰 Moods Managed</h1>
 
-<div id="game">
-  <p id="info"></p>
-  <div id="scenario"></div>
-
-  <h3>Your Cards</h3>
-  <div id="cards"></div>
-
-  <div id="submissions"></div>
-  <div id="scoreboard"></div>
-</div>
-
-<script src="script.js"></script>
-
-</body><h2>✅ Version 2 Fix</h2>
-``
-</html>
