@@ -1,10 +1,12 @@
+let mode = "";
+
 const socket = new WebSocket("wss://moods-managed.onrender.com/");
 
 let playerId = null;
 let playerName = "";
 
 // Emojis
-const moodEmojis = {
+const emoji = {
   happy: "😊",
   sad: "😢",
   angry: "😡",
@@ -12,8 +14,8 @@ const moodEmojis = {
   afraid: "😱"
 };
 
-// Card pool
-const allCards = [
+// Cards
+const cardsPool = [
   { text: "Give a hug", mood: "happy" },
   { text: "Tell a joke", mood: "happy" },
   { text: "Run away", mood: "afraid" },
@@ -26,7 +28,24 @@ const allCards = [
   { text: "Walk away", mood: "sad" }
 ];
 
-// Join
+// ✅ MODE SELECT
+function startSingle() {
+  mode = "single";
+  document.getElementById("modeScreen").style.display = "none";
+
+  document.getElementById("info").textContent =
+    "🎮 Single Player Mode";
+
+  startSingleRound();
+}
+
+function startMulti() {
+  mode = "multi";
+  document.getElementById("modeScreen").style.display = "none";
+  document.getElementById("joinScreen").style.display = "block";
+}
+
+// ✅ JOIN MULTI
 function joinGame() {
   playerName = document.getElementById("nameInput").value || "Player";
 
@@ -34,20 +53,17 @@ function joinGame() {
   document.getElementById("info").textContent = "Connecting...";
 }
 
-// Connect
-socket.onopen = () => {
-  console.log("Connected");
-};
-
-// Receive messages
+// ✅ SOCKET
 socket.onmessage = (event) => {
+  if (mode !== "multi") return;
+
   const data = JSON.parse(event.data);
 
   if (data.type === "init") {
     playerId = data.id;
 
     document.getElementById("info").textContent =
-      `🎮 ${playerName} (Player ${playerId})`;
+      `${playerName} (Player ${playerId})`;
 
     socket.send(JSON.stringify({
       type: "join",
@@ -68,38 +84,49 @@ socket.onmessage = (event) => {
   }
 };
 
-// Show scenario
-function showScenario(scenario) {
-  document.getElementById("scenario").innerHTML = `
-    <h2>📖 ${scenario.text}</h2>
-    <p>Feeling: ${moodEmojis[scenario.feeling]} ${scenario.feeling}</p>
-  `;
+// ✅ SINGLE PLAYER LOGIC
+function startSingleRound() {
+  const scenarios = [
+    { text: "A dragon is sad", feeling: "sad" },
+    { text: "A knight is scared", feeling: "afraid" },
+    { text: "A wizard is angry", feeling: "angry" }
+  ];
+
+  const scenario =
+    scenarios[Math.floor(Math.random() * scenarios.length)];
+
+  showScenario(scenario);
+}
+
+// ✅ SHOW SCENARIO
+function showScenario(s) {
+  document.getElementById("scenario").innerHTML =
+    `<h2>${s.text}</h2>
+     <p>${emoji[s.feeling]} ${s.feeling}</p>`;
 
   renderCards();
 }
 
-// Random cards
-function getRandomCards() {
-  return [...allCards]
+// ✅ RANDOM CARDS
+function getCards() {
+  return [...cardsPool]
     .sort(() => Math.random() - 0.5)
     .slice(0, 4);
 }
 
-// Render cards
+// ✅ RENDER
 function renderCards() {
   const container = document.getElementById("cards");
   container.innerHTML = "";
 
-  const cards = getRandomCards();
+  const cards = getCards();
 
   cards.forEach((card, i) => {
     const el = document.createElement("div");
     el.className = "card";
 
-    el.innerHTML = `
-      ${moodEmojis[card.mood]}<br>
-      ${card.text}
-    `;
+    el.innerHTML =
+      `${emoji[card.mood]}<br>${card.text}`;
 
     el.style.opacity = "0";
 
@@ -107,68 +134,55 @@ function renderCards() {
       el.style.opacity = "1";
     }, i * 150);
 
-    el.onclick = () => {
-      el.style.background = "gold";
-      el.style.transform = "scale(1.3) rotateY(20deg)";
-
-      setTimeout(() => submitCard(card), 200);
-    };
+    el.onclick = () => handleCard(card);
 
     container.appendChild(el);
   });
 }
 
-// Submit
-function submitCard(card) {
-  socket.send(JSON.stringify({
-    type: "submitCard",
-    playerId
-  }));
+// ✅ HANDLE CARD
+function handleCard(card) {
+  if (mode === "single") {
+    document.getElementById("info").textContent =
+      `You chose: ${card.text}`;
+    setTimeout(startSingleRound, 2000);
+  }
 
-  document.getElementById("cards").innerHTML =
-    "<h3>✅ Submitted!</h3>";
+  if (mode === "multi") {
+    socket.send(JSON.stringify({
+      type: "submitCard",
+      playerId
+    }));
+
+    document.getElementById("cards").innerHTML =
+      "<h3>✅ Submitted</h3>";
+  }
 }
 
-// Show submissions
-function showSubmissions(submissions) {
+// ✅ MULTI RESULTS
+function showSubmissions(subs) {
   const container = document.getElementById("cards");
-  container.innerHTML = "<h3>👑 Pick a winner</h3>";
+  container.innerHTML = "<h3>Pick a winner</h3>";
 
-  submissions.forEach((s) => {
+  subs.forEach((s) => {
     const el = document.createElement("div");
     el.className = "card";
 
-    el.innerHTML = `
-      ${moodEmojis[s.card.mood]}<br>
-      ${s.card.text}
-    `;
+    el.innerHTML =
+      `${emoji[s.card.mood]}<br>${s.card.text}`;
 
     el.onclick = () => {
-      chooseWinner(s.playerId);
+      socket.send(JSON.stringify({
+        type: "chooseWinner",
+        winnerId: s.playerId
+      }));
     };
 
     container.appendChild(el);
   });
 }
 
-// Choose winner
-function chooseWinner(id) {
-  socket.send(JSON.stringify({
-    type: "chooseWinner",
-    winnerId: id
-  }));
-}
-
-// Results
 function showResult(winner, scores) {
   document.getElementById("scenario").innerHTML =
     `<h2>🎉 Player ${winner} wins!</h2>`;
-
-  let text = "";
-  for (let id in scores) {
-    text += `🏆 Player ${id}: ${scores[id]}<br>`;
-  }
-
-  document.getElementById("cards").innerHTML =
-    `<h3>Scores</h3>${text}`;
 }
