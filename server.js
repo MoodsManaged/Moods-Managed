@@ -1,25 +1,15 @@
-// DEPLOY CHANGE TEST
-
-// deploy fix
-``
 const express = require("express");
 const WebSocket = require("ws");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Serve frontend files
+app.use(express.static("public"));
+
 const server = app.listen(PORT, () => {
   console.log("Server running on port " + PORT);
 });
-const PORT = process.env.PORT || 3000;
-
-const server = app.listen(PORT, () => {
-  console.log("Server running");
-});
-  console.log("http://localhost:3000");
-});
-
-app.use(express.static("public"));
 
 const wss = new WebSocket.Server({ server });
 
@@ -44,7 +34,6 @@ wss.on("connection", (ws) => {
 
   ws.send(JSON.stringify({ type: "init", id }));
 
-  // Start game when 3 players join
   if (players.length >= 3 && !gameStarted) {
     gameStarted = true;
     console.log("Starting game...");
@@ -57,15 +46,16 @@ wss.on("connection", (ws) => {
     if (data.type === "submitCard") {
       submissions.push({ playerId: data.playerId, card: data.card });
 
-      // When all non-messenger players submitted
       if (submissions.length === players.length - 1) {
         const messenger = players[currentMessenger];
 
         if (messenger && messenger.ws.readyState === WebSocket.OPEN) {
-          messenger.ws.send(JSON.stringify({
-            type: "showSubmissions",
-            submissions
-          }));
+          messenger.ws.send(
+            JSON.stringify({
+              type: "showSubmissions",
+              submissions
+            })
+          );
         }
       }
     }
