@@ -21,11 +21,7 @@ h1 {
   text-shadow: 0 0 25px gold;
 }
 
-h2 {
-  margin-top: 20px;
-}
-
-/* MENU */
+/* MENU BUTTONS */
 button {
   background: gold;
   border: none;
@@ -37,43 +33,48 @@ button {
   box-shadow: 0 0 10px gold;
 }
 
-/* GAME */
+/* GAME AREA */
 #game {
   display: none;
 }
 
-/* ✅ GRID LAYOUT (THIS IS THE BIG CHANGE) */
+/* ✅ HORIZONTAL ROW */
 #cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 20px;
-  max-width: 1000px;
-  margin: 30px auto;
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin: 40px;
+  flex-wrap: wrap;
 }
 
-/* ✅ ROBLOX-STYLE CARDS */
+/* ✅ ROBLOX STYLE CARD */
 .card {
-  background: white;
-  color: black;
+  background: linear-gradient(145deg, #23256b, #1b1d47);
+  color: white;
+  width: 220px;
   padding: 25px;
-  border-radius: 15px;
-  font-size: 18px;
+  border-radius: 20px;
   cursor: pointer;
 
-  box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
   transition: all 0.2s ease;
 }
 
+/* HOVER EFFECT */
 .card:hover {
-  transform: scale(1.07);
+  transform: scale(1.08);
   box-shadow: 0 0 40px gold;
 }
 
-/* emoji */
-.card span {
-  font-size: 30px;
-  display: block;
+/* ✅ AVATAR EMOJI */
+.avatar {
+  font-size: 40px;
   margin-bottom: 10px;
+}
+
+/* TEXT */
+.choice-text {
+  font-size: 16px;
 }
 </style>
 </head>

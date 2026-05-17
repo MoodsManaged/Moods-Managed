@@ -1,8 +1,8 @@
 let level = 1;
 
 const emoji = {
-  good: "✨",
-  bad: "⚠️",
+  good: "🧙‍♂️",
+  bad: "👹",
   afraid: "😱",
   sad: "😢",
   angry: "😡"
@@ -47,8 +47,8 @@ function createCard(text, good) {
   el.className = "card";
 
   el.innerHTML = `
-    <span>${good ? "✨" : "⚠️"}</span>
-    ${text}
+    <div class="avatar">${good ? "🧙‍♂️" : "👹"}</div>
+    <div class="choice-text">${text}</div>
   `;
 
   el.onclick = () => {
@@ -58,3 +58,4 @@ function createCard(text, good) {
 
   document.getElementById("cards").appendChild(el);
 }
+``
