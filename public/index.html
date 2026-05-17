@@ -17,12 +17,6 @@
       color: gold;
       margin-top: 20px;
       text-shadow: 0 0 10px gold;
-      animation: glow 2s infinite alternate;
-    }
-
-    @keyframes glow {
-      from { text-shadow: 0 0 5px gold; }
-      to { text-shadow: 0 0 20px gold; }
     }
 
     #game {
@@ -39,17 +33,12 @@
     }
 
     .card {
-      background: linear-gradient(145deg, #5a4fcf, #3c3492);
+      background: #5a4fcf;
       padding: 15px;
       margin: 10px;
       border-radius: 15px;
       display: inline-block;
       cursor: pointer;
-    }
-
-    .card:hover {
-      transform: scale(1.1);
-      background: #7b6cff;
     }
 
     #info {
@@ -65,10 +54,28 @@
       border-radius: 15px;
     }
   </style>
-
 </head>
 
 <body>
 
 <h1>🏰 Moods Managed</h1>
 
+<div id="game">
+
+  <p id="info">Waiting for players...</p>
+
+  <div id="scenario"></div>
+
+  <h3>Your Cards</h3>
+  <div id="cards"></div>
+
+  <div id="submissions"></div>
+  <div id="scoreboard"></div>
+
+</div>
+
+<!-- ✅ VERY IMPORTANT LINE -->
+<script src="/script.js"></script>
+
+</body>
+</html>
