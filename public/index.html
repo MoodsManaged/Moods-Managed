@@ -3,8 +3,9 @@
 <head>
 <title>Moods Managed</title>
 
-<!-- ✅ ✅ REAL SCRIPT TAGS (THIS FIXES EVERYTHING) -->
-<script src="/socket.io/socket.io.jsript src="game.js"></script>
+<!-- ✅ ✅ CORRECT SCRIPT TAGS -->
+<script src="/socket.io/socket.io.js"></script>
+<script src="game.js"></script>
 
 <style>
 body {
@@ -19,43 +20,33 @@ h1 {
   margin-top: 80px;
   font-size: 60px;
   color: gold;
-  text-shadow: 0 0 20px gold;
 }
 
 h2 {
-  font-size: 30px;
   margin-top: 20px;
-}
-
-.menu {
-  margin-top: 40px;
 }
 
 button {
   background: gold;
   border: none;
-  padding: 15px 30px;
-  margin: 15px;
+  padding: 15px 25px;
+  margin: 10px;
   font-size: 18px;
-  border-radius: 12px;
+  border-radius: 10px;
   cursor: pointer;
 }
 
 .card {
   background: white;
   color: black;
-  padding: 12px;
+  padding: 10px;
   margin: 10px auto;
-  width: 260px;
+  width: 250px;
   border-radius: 10px;
   cursor: pointer;
 }
 
-#game {
-  display: none;
-}
-
-#multiplayer {
+#game, #multiplayer {
   display: none;
 }
 </style>
@@ -66,7 +57,7 @@ button {
 <h1>🏰 Moods Managed</h1>
 <h2>Choose Mode</h2>
 
-<div id="menu" class="menu">
+<div id="menu">
   <button onclick="startStory()">🏰 Story Mode</button>
   <button onclick="startSingle()">🎮 Single Player</button>
   <button onclick="startMulti()">🌐 Multiplayer</button>
@@ -79,7 +70,7 @@ button {
 </div>
 
 <div id="multiplayer">
-  <h2>🌐 Multiplayer Mode</h2>
+  <h2>Multiplayer Mode</h2>
 </div>
 
 <script>
@@ -95,8 +86,7 @@ function startGame() {
   document.getElementById("menu").style.display = "none";
   document.getElementById("game").style.display = "block";
 
-  // ✅ this now works because game.js actually loads
-  nextScenario();
+  nextScenario(); // ✅ NOW WORKS
 }
 
 function startMulti() {
