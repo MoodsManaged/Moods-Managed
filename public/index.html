@@ -3,7 +3,7 @@
 <head>
 <title>Moods Managed</title>
 
-<!-- ✅ ✅ REAL SCRIPT TAGS (THIS WAS THE PROBLEM) -->
+<!-- ✅ ✅ REAL SCRIPT TAGS (CORRECT HTML) -->
 <script src="/socket.io/socket.io.js"></script>
 <script src="game.js"></script>
 
@@ -42,10 +42,6 @@ button {
   cursor: pointer;
 }
 
-button:hover {
-  background: #ffd700;
-}
-
 .card {
   background: white;
   color: black;
@@ -58,12 +54,10 @@ button:hover {
 
 #game {
   display: none;
-  margin-top: 30px;
 }
 
 #multiplayer {
   display: none;
-  margin-top: 30px;
 }
 </style>
 </head>
@@ -73,27 +67,24 @@ button:hover {
 <h1>🏰 Moods Managed</h1>
 <h2>Choose Mode</h2>
 
-<!-- ✅ MENU -->
 <div id="menu" class="menu">
   <button onclick="startStory()">🏰 Story Mode</button>
   <button onclick="startSingle()">🎮 Single Player</button>
   <button onclick="startMulti()">🌐 Multiplayer</button>
 </div>
 
-<!-- ✅ GAME SCREEN -->
 <div id="game">
   <div id="stats"></div>
   <div id="scenario"></div>
   <div id="cards"></div>
 </div>
 
-<!-- ✅ MULTIPLAYER SCREEN -->
 <div id="multiplayer">
   <h2>🌐 Multiplayer Mode</h2>
 </div>
 
 <script>
-// ✅ THESE FUNCTIONS NOW WORK (JS IS LOADED PROPERLY)
+// ✅ functions now WILL work because JS is properly loaded
 
 function startStory() {
   startGame();
@@ -107,8 +98,7 @@ function startGame() {
   document.getElementById("menu").style.display = "none";
   document.getElementById("game").style.display = "block";
 
-  // ✅ comes from game.js
-  nextScenario();
+  nextScenario(); // ✅ from game.js
 }
 
 function startMulti() {
@@ -119,4 +109,3 @@ function startMulti() {
 
 </body>
 </html>
-``
