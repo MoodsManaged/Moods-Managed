@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Moods Managed</title>
+
+  <style>
+    
+    body {
+      margin: 0;
+      font-family: "Georgia", serif;
+      background: radial-gradient(circle at top, #3a3d7c, #12132b);
+      color: white;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 48px;
+      color: gold;
+      margin-top: 20px;
+      text-shadow: 0 0 10px gold;
+      animation: glow 2s infinite alternate;
+    }
+
+    @keyframes glow {
+      from { text-shadow: 0 0 5px gold; }
+      to { text-shadow: 0 0 20px gold; }
+    }
+
+    #game {
+      max-width: 900px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    #scenario {
+      background: #2b2e6e;
+      padding: 20px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 0 15px black;
+    }
+
+    .card {
+      background: linear-gradient(145deg, #5a4fcf, #3c3492);
+      padding: 15px;
+      margin: 10px;
+      border-radius: 15px;
+      display: inline-block;
+      cursor: pointer;
+      box-shadow: 0 0 10px black;
+      transition: 0.2s;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .card:hover {
+      transform: scale(1.1);
+      background: #7b6cff;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0px); }
+    }
+
+    #info {
+      margin: 15px;
+      font-size: 20px;
+      color: lightgreen;
+    }
+
+    #scoreboard {
+      margin-top: 20px;
+      background: #22245a;
+      padding: 15px;
+      border-radius: 15px;
+    }
+
+    /* Magical sparkles background */
+    #sparkles {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      background: radial-gradient(circle, rgba(255,255,255,0.2) 1px, transparent 1px);
+      background-size: 50px 50px;
+      animation: moveSparkles 10s linear infinite;
+    }
+
+    @keyframes moveSparkles {
+      from { background-position: 0 0; }
+      to { background-position: 200px 200px; }
+    }
+
+  </style>
+</head>
+
+<body>
+
+<div id="sparkles"></div>
+
+<h1>🏰 Moods Managed</h1>
+
+<div id="game">
+  <p id="info"></p>
+
+  <div id="scenario"></div>
+
+  <h3>Your Cards</h3>
+  <div id="cards"></div>
+
+  <div id="submissions"></div>
+
+  <div id="scoreboard"></div>
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
+.card {
+  perspective: 1000px;
+}
+
+.card:hover {
+  transform: rotateY(10deg) scale(1.1);
+}
+``
