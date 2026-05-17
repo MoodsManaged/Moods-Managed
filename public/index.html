@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html>
-<head>
+<!DOCTYPE html><<head>
   <title>Moods Managed</title>
 
   <style>
@@ -10,7 +8,6 @@
       background: radial-gradient(circle at center, #2c2f75, #0a0c25);
       color: white;
       text-align: center;
-      perspective: 1000px;
     }
 
     h1 {
@@ -18,40 +15,6 @@
       color: gold;
       margin: 20px;
       text-shadow: 0 0 20px gold;
-    }
-
-    #game {
-      max-width: 900px;
-      margin: auto;
-      padding: 20px;
-    }
-
-    #scenario {
-      background: #2b2e6e;
-      padding: 20px;
-      border-radius: 20px;
-      margin-bottom: 20px;
-    }
-
-    .card {
-      width: 140px;
-      height: 180px;
-      background: linear-gradient(145deg, #6d5cff, #3c3492);
-      border-radius: 20px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      margin: 10px;
-      cursor: pointer;
-      transition: 0.3s;
-      box-shadow: 0 10px 20px black;
-      padding: 10px;
-      text-align: center;
-    }
-
-    .card:hover {
-      transform: scale(1.1) rotateY(10deg);
-      box-shadow: 0 0 20px gold;
     }
 
     button {
@@ -64,11 +27,16 @@
       font-size: 16px;
     }
 
-    #stats {
-      background: #11144a;
-      padding: 10px;
+    .card {
+      width: 140px;
+      height: 180px;
+      background: #5a4fcf;
       border-radius: 15px;
-      margin-bottom: 15px;
+      margin: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -79,7 +47,6 @@
 
 <div id="game">
 
-  <!-- ✅ ALL MODES -->
   <div id="modeScreen">
     <h2>Choose Mode</h2>
     <button onclick="startSingle()">🎮 Single Player</button>
@@ -88,24 +55,18 @@
   </div>
 
   <div id="joinScreen" style="display:none;">
-    <h2>Enter your name</h2>
     <input id="nameInput" placeholder="Your name..." />
     <button onclick="joinGame()">Join</button>
   </div>
 
-  <div id="stats"></div>
-
   <div id="scenario"></div>
-
-  <h3>Your Choices</h3>
   <div id="cards"></div>
-
   <p id="info"></p>
 
 </div>
 
-<!-- ✅✅✅ THIS FIXES EVERYTHING -->
-<script src="script.js"></script>
-
+<!-- ✅ ✅ ✅ THIS IS THE CORRECT LINE -->
+<script src="script
 </body>
 </html>
+<html>
