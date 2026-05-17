@@ -1,11 +1,13 @@
-let mode = "";
-let playerId = null;
-let playerName = "";
 let level = 1;
 
-const socket = new WebSocket("wss://moods-managed.onrender.com/");
+// ✅ PLAYER STATS
+let stats = {
+  courage: 0,
+  wisdom: 0,
+  kindness: 0
+};
 
-// ✅ Emojis
+// ✅ EMOJIS
 const emoji = {
   happy: "😊",
   sad: "😢",
@@ -14,211 +16,113 @@ const emoji = {
   afraid: "😱"
 };
 
-// ✅ CARD POOL
-const cardsPool = [
-  "Give a hug",
-  "Run away",
-  "Shout loudly",
-  "Take a deep breath",
-  "Tell a joke",
-  "Hide quickly",
-  "Cry softly",
-  "Walk away",
-  "Laugh loudly",
-  "Stay calm"
-];
-
-// ✅ BETTER SCENARIOS (emotion matches story)
+// ✅ FANTASY SCENARIOS
 const scenarios = [
-  { text: "You found a hidden treasure chest full of gold", feeling: "happy" },
-  { text: "You reunited with someone you deeply missed", feeling: "happy" },
-
-  { text: "You lost something that meant a lot to you", feeling: "sad" },
-  { text: "You said goodbye to someone important", feeling: "sad" },
-
-  { text: "Someone unfairly blamed you for something", feeling: "angry" },
-  { text: "Your hard work was completely ignored", feeling: "angry" },
-
-  { text: "You hear footsteps behind you in a dark forest", feeling: "afraid" },
-  { text: "You are about to face a powerful enemy", feeling: "afraid" },
-
-  { text: "You sit quietly by a peaceful lake at sunset", feeling: "calm" },
-  { text: "You are resting after a long journey", feeling: "calm" }
+  {
+    text: "You are a knight facing a fire-breathing dragon",
+    feeling: "afraid",
+    good: ["Stand your ground bravely", "Protect the villagers"],
+    bad: ["Run away in fear", "Abandon your armor"]
+  },
+  {
+    text: "You are a wizard whose spell has backfired",
+    feeling: "angry",
+    good: ["Calm yourself and try again", "Study the spell carefully"],
+    bad: ["Blame others", "Destroy your spellbook"]
+  },
+  {
+    text: "You are a dragon and someone stole your treasure",
+    feeling: "angry",
+    good: ["Search wisely", "Track the thief calmly"],
+    bad: ["Burn everything", "Attack randomly"]
+  },
+  {
+    text: "You are a knight being praised by the kingdom",
+    feeling: "happy",
+    good: ["Thank everyone kindly", "Stay humble"],
+    bad: ["Boast loudly", "Demand more rewards"]
+  },
+  {
+    text: "You are a wizard resting in a peaceful tower",
+    feeling: "calm",
+    good: ["Meditate", "Practice gentle magic"],
+    bad: ["Ignore your duties", "Fall asleep completely"]
+  }
 ];
 
-// ✅ SMART SELECT (no repeats)
-let shuffledScenarios = [];
-
-function getScenario() {
-  if (shuffledScenarios.length === 0) {
-    shuffledScenarios = [...scenarios].sort(() => Math.random() - 0.5);
-  }
-  return shuffledScenarios.pop();
-}
-
-// ✅ MODES
-function startSingle() {
-  mode = "single";
-  document.getElementById("modeScreen").style.display = "none";
-  document.getElementById("info").textContent = "🎮 Single Player";
-  nextSingle();
-}
-
+// ✅ START GAME
 function startStory() {
-  mode = "story";
-  level = 1;
   document.getElementById("modeScreen").style.display = "none";
-  document.getElementById("info").textContent = "🏰 Your story begins...";
-  nextStory();
+  nextScenario();
 }
 
-function startMulti() {
-  mode = "multi";
-  document.getElementById("modeScreen").style.display = "none";
-  document.getElementById("joinScreen").style.display = "block";
+// ✅ GET RANDOM SCENARIO
+function nextScenario() {
+  const s = scenarios[Math.floor(Math.random() * scenarios.length)];
+
+  displayStats();
+
+  document.getElementById("scenario").innerHTML = `
+    <h2>${s.text}</h2>
+    <p>${emoji[s.feeling]} ${s.feeling}</p>
+  `;
+
+  renderChoices(s);
 }
 
-function joinGame() {
-  playerName = document.getElementById("nameInput").value || "Player";
-  document.getElementById("joinScreen").style.display = "none";
-  document.getElementById("info").textContent = "Connecting...";
+// ✅ DISPLAY STATS
+function displayStats() {
+  document.getElementById("stats").innerHTML = `
+    <b>Level:</b> ${level} |
+    💪 Courage: ${stats.courage} |
+    🧠 Wisdom: ${stats.wisdom} |
+    ❤️ Kindness: ${stats.kindness}
+  `;
 }
 
-// ✅ MULTIPLAYER
-socket.onmessage = (event) => {
-  if (mode !== "multi") return;
-
-  const data = JSON.parse(event.data);
-
-  if (data.type === "init") {
-    playerId = data.id;
-
-    document.getElementById("info").textContent =
-      `${playerName} (Player ${playerId})`;
-
-    socket.send(JSON.stringify({
-      type: "join",
-      name: playerName
-    }));
-  }
-
-  if (data.type === "newRound") showScenario(data.scenario);
-  if (data.type === "showSubmissions") showSubmissions(data.submissions);
-  if (data.type === "roundResult") showResult(data.winner);
-};
-
-// ✅ GAME FLOW
-function nextSingle() {
-  showScenario(getScenario());
-}
-
-function nextStory() {
-  document.getElementById("info").textContent =
-    `🌟 Level ${level}`;
-  showScenario(getScenario());
-}
-
-// ✅ DISPLAY SCENARIO (FIRST PERSON ✅)
-function showScenario(s) {
-  document.getElementById("scenario").innerHTML =
-    `<h2>${s.text}</h2>
-     <p><b>Your feeling:</b> ${emoji[s.feeling]} ${s.feeling}</p>`;
-
-  renderCards(s.feeling);
-}
-
-// ✅ CARDS MATCH EMOTION
-function getCards(feeling) {
-  let filtered = cardsPool;
-
-  // Optional: bias cards based on emotion
-  if (feeling === "happy") filtered = ["Give a hug","Tell a joke","Laugh loudly"];
-  if (feeling === "sad") filtered = ["Cry softly","Walk away","Stay quiet"];
-  if (feeling === "angry") filtered = ["Shout loudly","Stomp away","Break something"];
-  if (feeling === "afraid") filtered = ["Run away","Hide quickly","Call for help"];
-  if (feeling === "calm") filtered = ["Take a deep breath","Sit quietly","Stay relaxed"];
-
-  return filtered
-    .sort(() => Math.random() - 0.5)
-    .slice(0, 4)
-    .map(text => ({ text, mood: feeling }));
-}
-
-// ✅ RENDER CARDS
-function renderCards(feeling) {
+// ✅ RENDER CHOICES
+function renderChoices(s) {
   const container = document.getElementById("cards");
   container.innerHTML = "";
 
-  const cards = getCards(feeling);
+  // Good choices
+  s.good.forEach(choice => {
+    createCard(choice, true);
+  });
 
-  cards.forEach((c, i) => {
-    const el = document.createElement("div");
-    el.className = "card";
-
-    el.innerHTML = `${emoji[c.mood]}<br>${c.text}`;
-
-    el.style.opacity = "0";
-
-    setTimeout(() => {
-      el.style.opacity = "1";
-    }, i * 150);
-
-    el.onclick = () => chooseCard(c);
-
-    container.appendChild(el);
+  // Bad choices
+  s.bad.forEach(choice => {
+    createCard(choice, false);
   });
 }
 
-// ✅ ACTION
-function chooseCard(card) {
-  document.getElementById("info").textContent =
-    `You choose to: ${card.text}`;
+// ✅ CREATE CARD
+function createCard(text, isGood) {
+  const el = document.createElement("div");
+  el.className = "card";
+  el.innerHTML = text;
 
-  if (mode === "single") {
-    setTimeout(nextSingle, 1500);
-  }
+  el.onclick = () => choose(text, isGood);
 
-  if (mode === "story") {
-    level++;
+  document.getElementById("cards").appendChild(el);
+}
+
+// ✅ HANDLE CHOICE
+function choose(text, isGood) {
+  if (isGood) {
+    stats.courage++;
+    stats.wisdom++;
+    stats.kindness++;
+
     document.getElementById("info").textContent =
-      "✨ You grow stronger...";
-    setTimeout(nextStory, 1500);
+      "✨ Wise choice! You grow stronger.";
+
+    level++;
+  } else {
+    stats.courage--;
+    document.getElementById("info").textContent =
+      "⚠️ That choice had consequences...";
   }
 
-  if (mode === "multi") {
-    socket.send(JSON.stringify({
-      type: "submitCard",
-      playerId
-    }));
-
-    document.getElementById("cards").innerHTML =
-      "<h3>✅ Submitted</h3>";
-  }
-}
-
-// ✅ MULTI RESULTS
-function showSubmissions(subs) {
-  const c = document.getElementById("cards");
-  c.innerHTML = "<h3>Pick Winner</h3>";
-
-  subs.forEach((s) => {
-    const el = document.createElement("div");
-    el.className = "card";
-
-    el.innerHTML = `${emoji[s.card.mood]}<br>${s.card.text}`;
-
-    el.onclick = () => {
-      socket.send(JSON.stringify({
-        type: "chooseWinner",
-        winnerId: s.playerId
-      }));
-    };
-
-    c.appendChild(el);
-  });
-}
-
-function showResult(winner) {
-  document.getElementById("scenario").innerHTML =
-    `<h2>🎉 Player ${winner} wins!</h2>`;
+  setTimeout(nextScenario, 2000);
 }

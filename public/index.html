@@ -7,7 +7,7 @@
     body {
       margin: 0;
       font-family: Georgia, serif;
-      background: radial-gradient(circle at center, #4a4fcf, #0d0f2a);
+      background: radial-gradient(circle at center, #2c2f75, #0a0c25);
       color: white;
       text-align: center;
       perspective: 1000px;
@@ -16,7 +16,7 @@
     h1 {
       font-size: 48px;
       color: gold;
-      margin-top: 20px;
+      margin: 20px;
       text-shadow: 0 0 20px gold;
     }
 
@@ -31,7 +31,6 @@
       padding: 20px;
       border-radius: 20px;
       margin-bottom: 20px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.7);
     }
 
     .card {
@@ -39,55 +38,34 @@
       height: 180px;
       background: linear-gradient(145deg, #6d5cff, #3c3492);
       border-radius: 20px;
-
       display: inline-flex;
-      justify-content: center;
       align-items: center;
-      text-align: center;
-
-      margin: 15px;
-      padding: 10px;
-
+      justify-content: center;
+      margin: 10px;
       cursor: pointer;
-
-      transition: all 0.3s ease;
-
-      box-shadow:
-        0 10px 20px rgba(0,0,0,0.6),
-        inset 0 0 10px rgba(255,255,255,0.2);
+      transition: 0.3s;
+      box-shadow: 0 10px 20px black;
     }
 
     .card:hover {
-      transform: rotateY(15deg) rotateX(10deg) scale(1.1);
-      box-shadow:
-        0 20px 40px rgba(0,0,0,0.8),
-        0 0 20px gold;
-    }
-
-    .card:active {
-      transform: scale(1.3);
-    }
-
-    #info {
-      margin: 15px;
-      font-size: 20px;
-      color: lightgreen;
+      transform: scale(1.1) rotateY(10deg);
+      box-shadow: 0 0 20px gold;
     }
 
     button {
-      padding: 12px 20px;
+      padding: 12px;
       margin: 10px;
       border-radius: 10px;
       border: none;
-      font-size: 18px;
-      cursor: pointer;
       background: gold;
+      cursor: pointer;
     }
 
-    input {
+    #stats {
+      background: #11144a;
       padding: 10px;
-      border-radius: 8px;
-      border: none;
+      border-radius: 15px;
+      margin-bottom: 15px;
     }
   </style>
 </head>
@@ -98,32 +76,22 @@
 
 <div id="game">
 
-  <!-- MODE SELECT -->
   <div id="modeScreen">
     <h2>Choose Mode</h2>
-    <button onclick="startSingle()">🎮 Single Player</button>
-    <button onclick="startMulti()">🌐 Multiplayer</button>
     <button onclick="startStory()">🏰 Story Mode</button>
   </div>
 
-  <!-- JOIN -->
-  <div id="joinScreen" style="display:none;">
-    <h2>Enter your name</h2>
-    <input id="nameInput" placeholder="Your name..." />
-    <button onclick="joinGame()">Join</button>
-  </div>
-
-  <p id="info"></p>
+  <div id="stats"></div>
 
   <div id="scenario"></div>
 
-  <h3>Your Cards</h3>
+  <h3>Your Choices</h3>
   <div id="cards"></div>
+
+  <p id="info"></p>
 
 </div>
 
-<!-- ✅ CRITICAL LINE -->
-<script src="/script.js"></script>
-
+script.js
 </body>
 </html>
