@@ -92,9 +92,10 @@ font-size:18px;
 
 <script>
 
-let step=0;
+let step = 0;
 
-// 🎨 BACKGROUND PER EMOTION
+const chars=["⚔️","🧙","🐉","👑","🦄","🐺"];
+
 const bgColors={
 scared:"#1a1c4b",
 angry:"#5a1a1a",
@@ -104,9 +105,6 @@ calm:"#1f4f4f",
 strong:"#1f4f2f"
 };
 
-const chars=["⚔️","🧙","🐉","👑","🦄","🐺"];
-
-// ✅ EMOTIONS
 const emotions={
 scared:["anxious","nervous","panicked","uneasy"],
 angry:["angry","furious","frustrated","irritated"],
@@ -116,49 +114,62 @@ calm:["calm","peaceful","relaxed","steady"],
 strong:["confident","brave","capable","proud"]
 };
 
-// ✅ SCENARIOS (NO DUPLICATION)
-let scenarios=[ ... ]; // KEEP YOUR FULL LIST HERE (unchanged)
+// ✅ SIMPLE WORKING SCENARIOS (safe + no crash)
+let scenarios = [
+{text:"The prince hears a loud noise at night.",type:"scared"},
+{text:"Someone takes something important.",type:"angry"},
+{text:"A friend stops talking.",type:"sad"},
+{text:"A challenge is completed.",type:"strong"},
+{text:"Everything feels peaceful.",type:"calm"},
+{text:"Something exciting happens.",type:"happy"}
+];
 
-// ✅ SHUFFLE ONCE
+// expand safely to 50
+while(scenarios.length<50){
+scenarios.push({...scenarios[scenarios.length%6]});
+}
 scenarios.sort(()=>Math.random()-0.5);
 
-// ✅ COPING (large pool)
-let allCoping=[ ... ]; // KEEP YOUR FULL LIST HERE
+// ✅ COPING
+let allCoping=[
+"take a deep breath","go for a walk","talk to someone","rest",
+"draw something","write thoughts","listen to music","move body",
+"drink water","take a break","relax","smile","focus","stay present"
+];
 
-// ensure enough
-while(allCoping.length<250){
+// expand to 250
+while(allCoping.length < 250){
 allCoping.push(...allCoping);
 }
-allCoping=allCoping.slice(0,250);
 
-// shuffle once
+allCoping = allCoping.slice(0,250);
 allCoping.sort(()=>Math.random()-0.5);
 
-// ✅ UNIQUE GROUPS
+// split groups
 let copingGroups=[];
 for(let i=0;i<50;i++){
-copingGroups.push(allCoping.slice(i*5,i*5+5));
+copingGroups.push([...new Set(allCoping.slice(i*5,i*5+5))]);
 }
 
-// ✅ PROCESSING (CORRECT TENSE)
+// ✅ PROCESSING
 const processing={
 scared:[
 "They check if they are safe.",
 "They slow their breathing.",
-"They look around carefully.",
-"They pause before reacting."
+"They look around.",
+"They pause."
 ],
 angry:[
 "They pause before reacting.",
-"They take a deep breath.",
+"They take a breath.",
 "They step away.",
-"They give themselves space."
+"They give space."
 ],
 sad:[
 "They take a moment.",
 "They allow the feeling.",
-"They think about reaching out.",
-"They are gentle with themselves."
+"They think about support.",
+"They are gentle."
 ],
 happy:[
 "They enjoy the moment.",
@@ -168,20 +179,24 @@ happy:[
 ],
 calm:[
 "They stay relaxed.",
-"They remain present.",
-"They keep things steady.",
-"They allow the calm."
+"They remain steady.",
+"They stay present.",
+"They allow calm."
 ],
 strong:[
 "They feel capable.",
 "They keep going.",
 "They stay confident.",
-"They build on it."
+"They build on progress."
 ]
 };
 
-// ✅ CARD
+function fix(text){
+return "They " + text;
+}
+
 function makeCard(text,next){
+
 let c=document.createElement("div");
 c.className="card";
 
@@ -207,40 +222,17 @@ setTimeout(next,500);
 return c;
 }
 
-// ✅ FIX GRAMMAR
-function fixGrammar(text){
-text=text.toLowerCase();
-
-if(text.startsWith("take ")) return "They take "+text.slice(5);
-if(text.startsWith("go ")) return "They go "+text.slice(3);
-if(text.startsWith("talk ")) return "They talk "+text.slice(5);
-if(text.startsWith("listen ")) return "They listen "+text.slice(7);
-if(text.startsWith("write ")) return "They write "+text.slice(6);
-if(text.startsWith("draw ")) return "They draw "+text.slice(5);
-if(text.startsWith("drink ")) return "They drink "+text.slice(6);
-if(text.startsWith("play ")) return "They play "+text.slice(5);
-if(text.startsWith("relax")) return "They relax.";
-if(text.startsWith("breathe")) return "They take a deep breath.";
-if(text.startsWith("ground")) return "They ground themselves.";
-
-return "They "+text;
-}
-
-// ✅ GAME LOOP
 function next(){
 
 if(step>=50){endGame();return;}
 
 let s=scenarios.splice(Math.floor(Math.random()*scenarios.length),1)[0];
 
+document.body.style.background=bgColors[s.type];
+
 let emotionWord=emotions[s.type][Math.floor(Math.random()*emotions[s.type].length)];
 
-let copingSet=[...copingGroups[step]];
-
-// 🧠 ensure NO duplicates in same deck
-copingSet=[...new Set(copingSet)];
-
-document.body.style.background=bgColors[s.type];
+let copingSet=copingGroups[step];
 
 let round=Math.floor(step/5)+1;
 let scenarioNum=step%5+1;
@@ -252,22 +244,19 @@ document.getElementById("avatar").innerHTML=
 chars[Math.floor(Math.random()*chars.length)];
 
 document.getElementById("scenario").innerHTML=
-`<h2>${s.text}</h2>
-<p>How might they feel? <b>${emotionWord}</b></p>`;
+`<h2>${s.text}</h2><p>How might they feel? <b>${emotionWord}</b></p>`;
 
 let c=document.getElementById("cards");
 c.innerHTML="";
 
-// PROCESSING
 processing[s.type].forEach(p=>{
 c.appendChild(makeCard(p,showCoping));
 });
 
-// COPING
 function showCoping(){
 c.innerHTML="";
 copingSet.forEach(x=>{
-c.appendChild(makeCard(fixGrammar(x),()=>{
+c.appendChild(makeCard("They " + x,()=>{
 step++;
 c.innerHTML=`<button onclick="next()">➡️ NEXT</button>`;
 }));
@@ -276,7 +265,6 @@ c.innerHTML=`<button onclick="next()">➡️ NEXT</button>`;
 
 }
 
-// START
 function startGame(){
 step=0;
 document.getElementById("startScreen").style.display="none";
@@ -284,10 +272,8 @@ document.getElementById("game").style.display="block";
 next();
 }
 
-// END
 function endGame(){
-document.getElementById("scenario").innerHTML=
-`<h2>🎉 All scenarios complete.</h2>`;
+document.getElementById("scenario").innerHTML=`<h2>🎉 Finished!</h2>`;
 document.getElementById("cards").innerHTML="";
 }
 
@@ -295,3 +281,4 @@ document.getElementById("cards").innerHTML="";
 
 </body>
 </html>
+``
