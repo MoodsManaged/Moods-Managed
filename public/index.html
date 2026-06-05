@@ -5,60 +5,120 @@
 
   <style>
     body {
-      background: radial-gradient(circle, #2c2f6b, #0d0f2e);
-      color: white;
-      text-align: center;
-      font-family: Arial, sans-serif;
       margin: 0;
+      font-family: Arial;
+      text-align: center;
+      color: white;
+
+      background: radial-gradient(circle at center, #2c2f6b, #0d0f2e);
+      transition: background 1s ease;
     }
 
     h1 {
-      margin-top: 40px;
-      font-size: 60px;
+      margin-top: 30px;
+      font-size: 55px;
       color: gold;
       text-shadow: 0 0 25px gold;
     }
 
+    /* ✅ AVATAR */
+    #avatar {
+      font-size: 90px;
+      margin: 20px;
+    }
+
+    /* 🎭 ANIMATIONS */
+
+    .angry {
+      animation: shake 0.2s infinite;
+    }
+
+    @keyframes shake {
+      0%{transform:translateX(-3px);}
+      50%{transform:translateX(3px);}
+      100%{transform:translateX(-3px);}
+    }
+
+    .scared {
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0%{transform:scale(1);}
+      50%{transform:scale(1.1);}
+      100%{transform:scale(1);}
+    }
+
+    .sad {
+      opacity: 0.6;
+      transform: scale(0.9);
+    }
+
+    .happy {
+      animation: bounce 0.6s infinite alternate;
+    }
+
+    @keyframes bounce {
+      from{transform:translateY(0);}
+      to{transform:translateY(-10px);}
+    }
+
+    .calm {
+      animation: float 3s infinite ease-in-out;
+    }
+
+    @keyframes float {
+      0%{transform:translateY(0);}
+      50%{transform:translateY(-5px);}
+      100%{transform:translateY(0);}
+    }
+
+    .strong {
+      transform: scale(1.2);
+    }
+
     #scenario {
-      margin: 30px;
-    }
-
-    h2 {
-      font-size: 30px;
-      margin-bottom: 15px;
-    }
-
-    p {
-      font-size: 20px;
+      margin: 20px;
     }
 
     #cards {
       display: flex;
       justify-content: center;
       gap: 30px;
-      margin: 50px;
+      margin: 40px;
       flex-wrap: wrap;
     }
 
-    /* ✅ BIG GAME CARDS */
     .card {
-      background: linear-gradient(145deg, #1b1d47, #2a2f85);
       width: 320px;
       padding: 35px;
       border-radius: 20px;
       cursor: pointer;
       font-size: 20px;
+
+      background: linear-gradient(145deg, #1b1d47, #2a2f85);
+      box-shadow: 0 0 20px rgba(0,0,0,0.6);
+
       transition: 0.25s;
-      box-shadow: 0 0 15px rgba(0,0,0,0.6);
     }
 
     .card:hover {
-      transform: scale(1.1);
-      box-shadow: 0 0 25px rgba(255,255,255,0.4);
+      transform: scale(1.08);
+      box-shadow: 0 0 30px rgba(255,255,255,0.5);
     }
 
-    .card:active {
-      transform: scale(0.97);
+    #startScreen {
+      margin-top: 100px;
+    }
+
+    .start-button {
+      padding: 20px 40px;
+      font-size: 22px;
+      border-radius: 15px;
+      cursor: pointer;
+      background: #2a2f85;
+      color: white;
+      border: none;
     }
 
   </style>
@@ -68,267 +128,161 @@
 
 <h1>🏰 Moods Managed</h1>
 
-<div id="game">
+<div id="startScreen">
+  <p>Welcome to your emotional quest.</p>
+  <button class="start-button" onclick="startGame()">Start Game</button>
+</div>
+
+<div id="game" style="display:none;">
+  <div id="avatar"></div>
   <div id="scenario"></div>
   <div id="cards"></div>
 </div>
 
 <script>
 
-// ===== BASIC =====
-let level = 1;
-let unrest = 0;
-let usedScenarios = [];
+// ===== STATE =====
+let usedScenarios=[];
 
-// ===== EMOTIONS =====
-const emotionGroups = {
-  angry: ["angry","frustrated","annoyed","furious","jealous"],
-  scared: ["anxious","nervous","worried","panicked","overwhelmed"],
-  sad: ["sad","lonely","disappointed","hopeless","tired"],
-  happy: ["happy","excited","joyful","cheerful"],
-  calm: ["calm","peaceful","relaxed","safe"],
-  strong: ["confident","brave","proud"]
+// ✅ EMOTIONS
+const emotionGroups={
+  angry:["angry","furious"],
+  scared:["anxious","panicked"],
+  sad:["sad","lonely"],
+  happy:["happy","joyful"],
+  calm:["calm","peaceful"],
+  strong:["confident","brave"]
 };
 
-// ===== SMART COPING =====
-const copingByEmotion = {
-
-  scared: {
-    best: [
-      "Take slow deep breaths",
-      "Notice 5 things around you",
-      "Sit somewhere safe",
-      "Wrap in a blanket"
-    ],
-    good: [
-      "Talk to someone",
-      "Drink water",
-      "Look around",
-      "Remind yourself you’re safe"
-    ]
-  },
-
-  angry: {
-    best: [
-      "Take deep breaths",
-      "Go for a walk",
-      "Stretch",
-      "Step away"
-    ],
-    good: [
-      "Kick a ball",
-      "Rip paper",
-      "Listen to music",
-      "Write feelings"
-    ]
-  },
-
-  sad: {
-    best: [
-      "Talk to a friend",
-      "Let yourself cry",
-      "Hug something",
-      "Write in a diary"
-    ],
-    good: [
-      "Draw",
-      "Listen to calm music",
-      "Think of someone you love",
-      "Rest"
-    ]
-  },
-
-  happy: {
-    best: [
-      "Share your happiness",
-      "Play a game",
-      "Smile",
-      "Enjoy the moment"
-    ],
-    good: [
-      "Dance",
-      "Create something",
-      "Celebrate",
-      "Help someone"
-    ]
-  },
-
-  calm: {
-    best: [
-      "Stay present",
-      "Relax",
-      "Enjoy quiet",
-      "Read a book"
-    ],
-    good: [
-      "Listen to music",
-      "Take a walk",
-      "Sit peacefully",
-      "Breathe slowly"
-    ]
-  },
-
-  strong: {
-    best: [
-      "Set a goal",
-      "Try something new",
-      "Keep going",
-      "Encourage others"
-    ],
-    good: [
-      "Practice a skill",
-      "Help someone",
-      "Plan something",
-      "Take initiative"
-    ]
-  }
+// ✅ EMOTION COLORS
+const emotionColors={
+  angry:"#ff4b5c",
+  scared:"#845ef7",
+  sad:"#6c757d",
+  happy:"#ffd166",
+  calm:"#118ab2",
+  strong:"#06d6a0"
 };
 
-function getCopingOptions(type) {
-  const group = copingByEmotion[type];
+// ✅ CHARACTERS
+const characters=["⚔️","🧙","🐉","👑","🧑","🦄"];
 
-  const combined = [
-    ...group.best,
-    ...group.best,
-    ...group.good
-  ];
-
-  return combined
-    .sort(() => Math.random() - 0.5)
-    .slice(0, 4);
+// ✅ START
+function startGame(){
+  document.getElementById("startScreen").style.display="none";
+  document.getElementById("game").style.display="block";
+  nextScenario();
 }
 
-// ===== START AUTO =====
-window.onload = () => nextScenario();
+// ✅ MAIN LOOP
+function nextScenario(){
 
-// ===== MAIN LOOP =====
-function nextScenario() {
+  const avatar=document.getElementById("avatar");
 
-  if (unrest >= 5) {
-    document.getElementById("game").innerHTML =
-      "<h2>💥 Too much unrest...</h2>";
-    return;
-  }
+  // pick random character
+  avatar.className="";
+  avatar.innerHTML=characters[Math.floor(Math.random()*characters.length)];
 
-  const s = generateScenario();
+  const s=generateScenario();
 
-  window.currentEmotion = s.emotion.type;
+  // ✅ APPLY COLOR
+  document.body.style.background=
+    `radial-gradient(circle, ${emotionColors[s.emotion.type]}, #0d0f2e)`;
 
-  document.getElementById("scenario").innerHTML = `
+  // ✅ APPLY ANIMATION CLASS
+  avatar.classList.add(s.emotion.type);
+
+  window.currentEmotion=s.emotion.type;
+
+  document.getElementById("scenario").innerHTML=`
     <h2>${s.text}</h2>
     <p>💭 I feel <b>${s.emotion.word}</b></p>
-    <p>What should I do FIRST?</p>
   `;
 
-  const container = document.getElementById("cards");
-  container.innerHTML = "";
+  const cards=document.getElementById("cards");
+  cards.innerHTML="";
 
-  ["Pause","Notice feeling","Think"]
-    .forEach(c => {
-      const el = document.createElement("div");
-      el.className = "card";
-      el.innerHTML = c;
-      el.onclick = showDecision;
-      container.appendChild(el);
+  ["Pause","Notice","Think"].forEach(c=>{
+    const el=document.createElement("div");
+    el.className="card";
+    el.innerHTML=c;
+    el.onclick=showDecision;
+    cards.appendChild(el);
+  });
+}
+
+// ✅ DECISION
+function showDecision(){
+  const cards=document.getElementById("cards");
+  cards.innerHTML="";
+
+  ["Pause and think","Ask for help","Ignore it","React instantly"]
+    .sort(()=>Math.random()-0.5)
+    .forEach(t=>{
+      const el=document.createElement("div");
+      el.className="card";
+      el.innerHTML=t;
+      el.onclick=showCoping;
+      cards.appendChild(el);
     });
 }
 
-// ===== DECISION =====
-function showDecision() {
-  const container = document.getElementById("cards");
-  container.innerHTML = "";
+// ✅ COPING
+const copingByEmotion={
+  scared:["Breathe slowly","Stay safe","Look around"],
+  angry:["Walk","Breathe","Move"],
+  sad:["Talk","Cry","Hug"],
+  happy:["Play","Smile","Share"],
+  calm:["Relax","Read"],
+  strong:["Try","Lead"]
+};
 
-  const options = [
-    {text:"Pause and think", v:1},
-    {text:"Ask for help", v:1},
-    {text:"Ignore it", v:0},
-    {text:"React instantly", v:-1}
-  ].sort(() => Math.random() - 0.5);
+function showCoping(){
+  const cards=document.getElementById("cards");
+  cards.innerHTML="";
 
-  options.forEach(o => {
-    const el = document.createElement("div");
-    el.className = "card";
-    el.innerHTML = o.text;
-
-    el.onclick = () => {
-      if (o.v === 1) level++;
-      if (o.v === -1) unrest++;
-      showCoping();
-    };
-
-    container.appendChild(el);
-  });
+  copingByEmotion[window.currentEmotion]
+    .sort(()=>Math.random()-0.5)
+    .slice(0,4)
+    .forEach(c=>{
+      const el=document.createElement("div");
+      el.className="card";
+      el.innerHTML=c;
+      el.onclick=()=>{
+        cards.innerHTML="<p>💚 Good choice</p>";
+        setTimeout(nextScenario,1500);
+      };
+      cards.appendChild(el);
+    });
 }
 
-// ===== COPING =====
-function showCoping() {
-  const container = document.getElementById("cards");
-  container.innerHTML = "";
+// ✅ SCENARIOS
+function generateScenario(){
 
-  const options = getCopingOptions(window.currentEmotion);
-
-  options.forEach(c => {
-    const el = document.createElement("div");
-    el.className = "card";
-    el.innerHTML = c;
-    el.onclick = () => showFeedback();
-    container.appendChild(el);
-  });
-}
-
-// ===== FEEDBACK =====
-function showFeedback() {
-  document.getElementById("cards").innerHTML = "<p>💚 Good choice</p>";
-  setTimeout(nextScenario, 1500);
-}
-
-// ===== SCENARIOS MATCHED =====
-function generateScenario() {
-
-const scenarios = [
-
-{text:"The dragon broke a wing and cannot fly", type:"sad"},
-{text:"A villager is going to a new school", type:"scared"},
-{text:"The prince hears parents arguing", type:"scared"},
-{text:"A child wakes up in the dark", type:"scared"},
-{text:"A friend is not speaking", type:"sad"},
-{text:"A scary shadow appears at night", type:"scared"},
-{text:"Plans suddenly change", type:"sad"},
-{text:"A child feels overwhelmed", type:"scared"},
-{text:"Someone is not invited", type:"sad"},
-
-{text:"The dragon is teased in front of others", type:"angry"},
-{text:"Someone says something mean", type:"angry"},
-{text:"A game feels unfair", type:"angry"},
-
-{text:"A child succeeds at something", type:"strong"},
-{text:"Helping someone else", type:"strong"},
-
-{text:"A quiet peaceful moment", type:"calm"},
-{text:"Reading quietly", type:"calm"},
-
-{text:"Playing a fun game", type:"happy"},
-{text:"A celebration is happening", type:"happy"}
-
+const scenarios=[
+  {text:"My wing is broken and I cannot fly",type:"sad"},
+  {text:"I am going somewhere new",type:"scared"},
+  {text:"I hear something scary",type:"scared"},
+  {text:"Someone is mean to me",type:"angry"},
+  {text:"Something is unfair",type:"angry"},
+  {text:"I did something great",type:"strong"},
+  {text:"Everything feels calm",type:"calm"},
+  {text:"I am having fun",type:"happy"}
 ];
 
-let available = scenarios.filter(s => !usedScenarios.includes(s.text));
+let available=scenarios.filter(s=>!usedScenarios.includes(s.text));
+if(available.length===0){usedScenarios=[];available=scenarios;}
 
-if (available.length === 0) {
-  usedScenarios = [];
-  available = scenarios;
-}
-
-const chosen = available[Math.floor(Math.random() * available.length)];
+const chosen=available[Math.floor(Math.random()*available.length)];
 usedScenarios.push(chosen.text);
 
-const emoList = emotionGroups[chosen.type];
+const emo=emotionGroups[chosen.type];
 
-return {
-  text: chosen.text,
-  emotion: {
-    type: chosen.type,
-    word: emoList[Math.floor(Math.random() * emoList.length)]
+return{
+  text:chosen.text,
+  emotion:{
+    type:chosen.type,
+    word:emo[Math.floor(Math.random()*emo.length)]
   }
 };
 
