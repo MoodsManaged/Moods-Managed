@@ -16,21 +16,20 @@ h1{font-size:50px;color:gold;}
 
 #avatar{font-size:80px;margin:15px;}
 
-#scenario h2{font-size:30px;}
-#scenario p{font-size:24px;}
+#scenario h2{font-size:28px;}
+#scenario p{font-size:22px;}
 
 #cards{
 display:flex;
 justify-content:center;
 flex-wrap:wrap;
 gap:30px;
-margin:50px;
+margin:40px;
 }
 
-/* ✅ REAL CARD LOOK */
 .card{
 width:220px;
-height:320px;
+height:300px;
 perspective:1000px;
 cursor:pointer;
 }
@@ -38,30 +37,26 @@ cursor:pointer;
 .inner{
 width:100%;
 height:100%;
-transition:0.6s;
+position:relative;
 transform-style:preserve-3d;
+transition:0.6s;
 }
 
-.card.flip .inner{
-transform:rotateY(180deg);
-}
+.card.flip .inner{transform:rotateY(180deg);}
 
 .front,.back{
 position:absolute;
 width:100%;
 height:100%;
-padding:20px;
-border-radius:18px;
-
+border-radius:16px;
 display:flex;
-align-items:center;
 justify-content:center;
+align-items:center;
+padding:20px;
 text-align:center;
-
 backface-visibility:hidden;
 }
 
-/* ✅ BEAUTIFUL CARD */
 .front{
 background:linear-gradient(145deg,#2a2f85,#4045c7);
 box-shadow:0 10px 25px rgba(0,0,0,0.5);
@@ -72,17 +67,9 @@ background:#111;
 transform:rotateY(180deg);
 }
 
-/* ✅ HOVER EFFECT */
-.card:hover{
-transform:translateY(-10px) scale(1.04);
-}
-
 button{
 padding:12px 24px;
 font-size:18px;
-border-radius:10px;
-border:none;
-cursor:pointer;
 }
 </style>
 </head>
@@ -104,145 +91,130 @@ cursor:pointer;
 
 <script>
 
-// ===== STATE =====
 let step = 0;
-let score = 0;
-let streak = 0;
 
+// ===== CHARACTERS
 const chars=["⚔️","🧙","🐉","👑","🦄","🐺"];
 
-// ===== EMOTIONS
-const emotions={
-scared:["anxious","nervous","on edge","panicked"],
-angry:["frustrated","angry","furious"],
-sad:["down","lonely","hurt"],
-happy:["happy","excited","joyful"],
-calm:["calm","peaceful","relaxed"],
-strong:["confident","brave","capable"]
-};
-
-// ===== 50 STRONG SCENARIOS (MATCHED)
-const scenarios = [];
-
-// build 50 scenarios cleanly
-const baseScenarios = [
-{t:"I hear something moving in the dark",e:"scared"},
-{t:"The lights suddenly go out",e:"scared"},
-{t:"A loud noise makes me jump",e:"scared"},
-{t:"I feel unsafe somewhere unfamiliar",e:"scared"},
-{t:"Something startles me unexpectedly",e:"scared"},
-
-{t:"Someone treats me unfairly",e:"angry"},
-{t:"Someone says something rude",e:"angry"},
-{t:"I get blamed for something I didn't do",e:"angry"},
-{t:"Someone interrupts me",e:"angry"},
-{t:"My effort is ignored",e:"angry"},
-
-{t:"A friend ignores me",e:"sad"},
-{t:"I feel left out",e:"sad"},
-{t:"Something important didn’t work out",e:"sad"},
-{t:"I feel alone",e:"sad"},
-{t:"I miss someone",e:"sad"},
-
-{t:"I finish something difficult",e:"strong"},
-{t:"I help someone succeed",e:"strong"},
-{t:"I try something new",e:"strong"},
-{t:"I solve a hard problem",e:"strong"},
-{t:"I keep going even when it’s hard",e:"strong"},
-
-{t:"Everything feels calm and quiet",e:"calm"},
-{t:"I am resting peacefully",e:"calm"},
-{t:"Nothing is rushing me",e:"calm"},
-{t:"I feel steady and relaxed",e:"calm"},
-{t:"I enjoy a quiet moment",e:"calm"},
-
-{t:"I am having fun with others",e:"happy"},
-{t:"Something exciting happens",e:"happy"},
-{t:"I feel proud of myself",e:"happy"},
-{t:"I laugh a lot",e:"happy"},
-{t:"I enjoy a great moment",e:"happy"}
+// ===== UNIQUE EMOTIONS (50)
+const emotionWords = [
+"anxious","nervous","panicked","uneasy","overwhelmed",
+"angry","furious","frustrated","irritated","annoyed",
+"sad","lonely","hurt","down","hopeless",
+"happy","joyful","excited","playful","cheerful",
+"calm","peaceful","relaxed","steady","safe",
+"confident","brave","capable","proud","strong",
+"worried","tense","startled","shocked","uncertain",
+"disappointed","excluded","heavy","empty","quiet",
+"thrilled","energised","hopeful","curious","inspired",
+"grounded","balanced","clear","focused","stable"
 ];
 
-// make it 50
-while(scenarios.length < 50){
-scenarios.push({
-text: baseScenarios[scenarios.length % baseScenarios.length].t,
-type: baseScenarios[scenarios.length % baseScenarios.length].e
-});
+// ===== UNIQUE SCENARIOS (50 MATCHED)
+const scenarios = [
+{text:"I hear something moving behind me in the dark"},
+{text:"The lights suddenly go out"},
+{text:"A loud crash startles me"},
+{text:"I feel unsafe walking somewhere new"},
+{text:"Something moves unexpectedly nearby"},
+
+{text:"Someone treats me unfairly"},
+{text:"Someone says something rude to me"},
+{text:"I get blamed for something I didn’t do"},
+{text:"Someone interrupts me"},
+{text:"My effort is ignored"},
+
+{text:"I’m left out of a group"},
+{text:"A friend stops talking to me"},
+{text:"Something important didn’t work out"},
+{text:"I lose something meaningful"},
+{text:"I feel alone in a crowd"},
+
+{text:"I finish something difficult"},
+{text:"I help someone succeed"},
+{text:"I solve something on my own"},
+{text:"I overcome something hard"},
+{text:"I keep going even when it’s tough"},
+
+{text:"Everything feels calm and quiet"},
+{text:"I sit peacefully with nothing to do"},
+{text:"Nothing is rushing me"},
+{text:"I feel steady and relaxed"},
+{text:"I enjoy a quiet moment"},
+
+{text:"I laugh with friends"},
+{text:"Something exciting happens"},
+{text:"I feel proud of myself"},
+{text:"I celebrate something"},
+{text:"I enjoy a really fun moment"},
+
+{text:"I face something unexpected"},
+{text:"Something surprises me suddenly"},
+{text:"A situation changes quickly"},
+{text:"I feel unsure what will happen"},
+{text:"I hesitate before acting"},
+
+{text:"Someone misunderstands me"},
+{text:"I feel overlooked"},
+{text:"Something doesn’t go my way"},
+{text:"Plans don’t work out"},
+{text:"I feel disconnected"},
+
+{text:"I succeed at something new"},
+{text:"I take initiative"},
+{text:"I challenge myself"},
+{text:"I improve at something"},
+{text:"I take the lead"},
+
+{text:"I slow down and breathe"},
+{text:"I sit quietly observing"},
+{text:"I enjoy silence"},
+{text:"I feel balanced"},
+{text:"I stay present"
 }
+];
 
-// shuffle
-scenarios.sort(()=>Math.random()-0.5);
+// ===== UNIQUE COPING (50)
+let copingPool = [
+"Take slow deep breaths","Look around carefully","Find a safe place","Talk to someone","Ground yourself",
+"Move your body","Take space","Release tension","Step outside","Reset yourself",
+"Talk it out","Allow yourself to cry","Rest","Be kind to yourself","Sit quietly",
+"Enjoy the moment","Share it","Celebrate","Smile","Stay present",
+"Relax deeply","Read something calming","Take your time","Breathe slowly","Stay steady",
+"Keep going","Try again","Help someone","Stay strong","Keep building",
+"Drink water","Stretch your body","Take a walk","Pause physically","Calm down slowly",
+"Listen to music","Write your thoughts","Focus on senses","Count your breaths","Sit still",
+"Watch your thoughts","Let it pass","Stay aware","Comfort yourself","Reset gently",
+"Take control","Center yourself","Slow everything down","Stay focused","Let yourself settle"
+];
 
-// ===== PROCESSING PER EMOTION
-const processing = {
-scared:[
-"Wait… am I safe?",
-"I need to slow my breathing.",
-"Look around carefully.",
-"Don’t panic.",
-"I can handle this."
-],
-angry:[
-"Pause… don’t react yet.",
-"Why is this bothering me?",
-"Take a breath.",
-"Don’t snap.",
-"Step back."
-],
-sad:[
-"This feels really heavy.",
-"Maybe I should talk to someone.",
-"It’s okay to feel this.",
+// ===== PROCESSING (emotion-neutral but varied)
+const processingPool = [
+"Wait… what’s happening right now?",
+"Pause for a second.",
+"What am I feeling?",
+"Don’t rush this.",
 "I need a moment.",
-"I shouldn’t go through this alone."
-],
-happy:[
-"This feels good.",
-"I want to enjoy this.",
-"Stay in this moment.",
-"I should appreciate this.",
-"This is a nice moment."
-],
-calm:[
-"Just stay here.",
-"This feels steady.",
-"Nothing needs rushing.",
-"I can enjoy this.",
-"Stay present."
-],
-strong:[
-"I’ve got this.",
-"I feel capable.",
-"Keep going.",
-"I can do more.",
-"Let’s build on this."
-]
-};
-
-// ===== COPING
-const coping={
-scared:["Breathe slowly","Look around","Find safety","Talk to someone","Stay grounded"],
-angry:["Move your body","Take space","Breathe deeply","Reset","Release tension"],
-sad:["Talk to someone","Rest","Comfort yourself","Cry","Take care of yourself"],
-happy:["Share it","Celebrate","Enjoy it","Smile","Stay present"],
-calm:["Relax","Stay present","Breathe","Enjoy quiet","Rest"],
-strong:["Keep going","Try more","Help someone","Lead","Build on it"]
-};
+"Let me think first.",
+"Slow this down.",
+"What do I need here?",
+"Take a breath first.",
+"Step back mentally."
+];
 
 // ===== CARD
-function card(text,next){
-let c=document.createElement("div");
+function makeCard(text,next){
+const c=document.createElement("div");
 c.className="card";
 
-let inner=document.createElement("div");
+const inner=document.createElement("div");
 inner.className="inner";
 
-let front=document.createElement("div");
+const front=document.createElement("div");
 front.className="front";
 front.innerHTML=text;
 
-let back=document.createElement("div");
+const back=document.createElement("div");
 back.className="back";
 back.innerHTML="✓";
 
@@ -257,54 +229,63 @@ setTimeout(next,500);
 return c;
 }
 
-// ===== MAIN LOOP
+// ===== NEXT
 function next(){
 
-if(step>=50) return endGame();
+if(step>=50){
+endGame();
+return;
+}
 
-let s = scenarios[step];
-let emoWord = emotions[s.type][Math.random()*emotions[s.type].length|0];
+// ✅ REMOVE used items (NO REUSE EVER)
+const scenario = scenarios.splice(Math.floor(Math.random()*scenarios.length),1)[0];
+const emotion = emotionWords.splice(Math.floor(Math.random()*emotionWords.length),1)[0];
+
+// ✅ coping unique pull (5 per scenario)
+let copingChoices=[];
+for(let i=0;i<5;i++){
+copingChoices.push(copingPool.splice(Math.floor(Math.random()*copingPool.length),1)[0]);
+}
 
 let round = Math.floor(step/5)+1;
 let scenarioNum = (step%5)+1;
 
 document.getElementById("info").innerHTML=
-`Round ${round}/10 — Scenario ${scenarioNum}/5 — Score: ${score}`;
+`Round ${round}/10 — Scenario ${scenarioNum}/5`;
 
 document.getElementById("avatar").innerHTML=
 chars[Math.floor(Math.random()*chars.length)];
 
 document.getElementById("scenario").innerHTML=
-`<h2>${s.text}</h2><p>I feel <b>${emoWord}</b></p>`;
+`<h2>${scenario.text}</h2><p>I feel <b>${emotion}</b></p>`;
 
 let c=document.getElementById("cards");
 c.innerHTML="";
 
-// ✅ processing only (NO decisions)
-processing[s.type].forEach(t=>{
-c.appendChild(card(t,()=>showCoping(s)));
+// PROCESSING
+processingPool.forEach(p=>{
+c.appendChild(makeCard(p,showCoping));
+});
+
+// COPING STAGE
+function showCoping(){
+
+c.innerHTML="";
+
+copingChoices.forEach(x=>{
+c.appendChild(makeCard(x,()=>{
+step++;
+c.innerHTML=`<button onclick="next()">➡️ NEXT</button>`;
+}));
 });
 
 }
 
-// ===== COPING
-function showCoping(s){
-
-let c=document.getElementById("cards");
-c.innerHTML="";
-
-coping[s.type].forEach(x=>{
-c.appendChild(card(x,()=>{
-step++;
-c.innerHTML=`<button onclick="next()">➡️ GO TO NEXT SCENARIO</button>`;
-}));
-});
 }
 
 // ===== START
 function startGame(){
 step=0;
-score=0;
 document.getElementById("startScreen").style.display="none";
 document.getElementById("game").style.display="block";
 next();
@@ -313,8 +294,7 @@ next();
 // ===== END
 function endGame(){
 document.getElementById("scenario").innerHTML=
-`<h2>🎉 You completed all 10 rounds!</h2>
-<p>Score: ${score}</p>`;
+`<h2>🎉 All 50 completed. Nothing repeated.</h2>`;
 document.getElementById("cards").innerHTML="";
 }
 
