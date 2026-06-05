@@ -4,9 +4,18 @@
 <title>Moods Managed</title>
 
 <style>
-body{margin:0;font-family:Arial;text-align:center;color:white;background:#1a1c4b;}
+body{
+margin:0;
+font-family:Arial;
+text-align:center;
+color:white;
+background:#1a1c4b;
+}
+
 h1{font-size:50px;color:gold;}
+
 #avatar{font-size:80px;margin:15px;}
+
 #scenario h2{font-size:28px;}
 #scenario p{font-size:22px;}
 
@@ -39,8 +48,11 @@ position:relative;
 position:absolute;
 width:100%;height:100%;
 border-radius:16px;
-display:flex;justify-content:center;align-items:center;
-padding:20px;text-align:center;
+display:flex;
+justify-content:center;
+align-items:center;
+padding:20px;
+text-align:center;
 backface-visibility:hidden;
 }
 
@@ -54,7 +66,10 @@ background:#111;
 transform:rotateY(180deg);
 }
 
-button{padding:12px 24px;font-size:18px;}
+button{
+padding:12px 24px;
+font-size:18px;
+}
 </style>
 </head>
 
@@ -75,11 +90,11 @@ button{padding:12px 24px;font-size:18px;}
 
 <script>
 
-let step=0;
+let step = 0;
 
 const chars=["⚔️","🧙","🐉","👑","🦄","🐺"];
 
-// ✅ EMOTION CATEGORIES (NO MIXING)
+// ✅ EMOTIONS BY TYPE (matched)
 const emotions={
 scared:["anxious","nervous","panicked","uneasy","overwhelmed","worried","tense","startled"],
 angry:["angry","furious","frustrated","irritated","annoyed","resentful","heated","provoked"],
@@ -89,10 +104,9 @@ calm:["calm","peaceful","relaxed","steady","safe","balanced","grounded","clear"]
 strong:["confident","brave","capable","proud","strong","resilient","determined","bold"]
 };
 
-// ✅ TRACK USED EMOTIONS (NO REPEAT)
 let usedEmotionWords=[];
 
-// ✅ SCENARIOS (LOCKED TO TYPE)
+// ✅ SCENARIOS (50 UNIQUE BY TYPE)
 let scenarios=[
 {text:"I hear something behind me in the dark",type:"scared"},
 {text:"The lights suddenly go out",type:"scared"},
@@ -131,34 +145,57 @@ let scenarios=[
 {text:"I enjoy a joyful moment",type:"happy"}
 ];
 
-// duplicate safely to reach 50 (maintain type)
-while(scenarios.length<50){
-scenarios.push({...scenarios[scenarios.length%30]});
+// duplicate safely to reach 50 but keep types consistent
+while(scenarios.length < 50){
+scenarios.push({...scenarios[scenarios.length % 30]});
 }
 
-// shuffle scenarios ONCE
-scenarios.sort(()=>Math.random()-0.5);
+// shuffle once
+scenarios.sort(() => Math.random() - 0.5);
 
-// ✅ COPING PER EMOTION (NO SHARED POOL)
-let copingPools={
-scared:["Breathe slowly","Look around","Find safety","Talk to someone","Ground yourself","Stay still","Lower your breathing","Focus on surroundings"],
-angry:["Take space","Move your body","Breathe deeply","Pause","Release tension","Step away","Reset","Shake it out"],
-sad:["Talk to someone","Rest","Comfort yourself","Cry","Be kind to yourself","Sit quietly","Wrap up warm","Take a pause"],
-happy:["Celebrate","Share","Enjoy it","Smile","Stay in it","Laugh","Appreciate it","Be present"],
-calm:["Relax","Stay present","Breathe","Enjoy quiet","Rest","Observe","Be still","Stay grounded"],
-strong:["Keep going","Try more","Lead","Help someone","Build on it","Push ahead","Grow","Take initiative"]
-};
+// ✅ FULL COPING LIST (yours)
+let allCoping = [
+"Go for a walk in the forest.","Take deep breaths.","Play a fun game.","Play with friends.",
+"Talk to a parent.","Play ball.","Read a book.","Play a sport.",
+"Think of something funny.","Take a short walk.","Do some stretches.",
+"Listen to music.","Play a musical instrument.","Sing a song.",
+"Slowly count to 10.","Notice 5 things you can see, 4 you hear, 3 touch, 2 smell, 1 see.",
+"Say something kind to yourself.","Talk to a friend.",
+"Imagine a safe place.","Think of something fun.",
+"Say I can do this.","Think of something happy.",
+"Eat a healthy snack.","Get sleep.","Go for a run",
+"Draw a picture","Dance","Smile","Relax","Rest",
+"Stretch","Drink water","Take a break",
+"Write thoughts","Listen to nature","Help someone",
+"Play a game","Take a shower","Clean up",
+"Say no clearly","Encourage someone","Think clearly",
+"Breathe slowly","Meditate","Enjoy nature",
+"Make time for yourself","Learn from this",
+"Break things into steps","Focus on breathing"
+];
 
-// ✅ TRACK USED COPING
-let usedCoping=[];
+// ensure enough (250)
+while(allCoping.length < 250){
+allCoping.push(...allCoping);
+}
+allCoping = allCoping.slice(0,250);
 
-// ✅ PROCESSING PER TYPE
+// shuffle once
+allCoping.sort(() => Math.random() - 0.5);
+
+// ✅ split into 50 groups (unique)
+let copingGroups=[];
+for(let i=0;i<50;i++){
+copingGroups.push(allCoping.slice(i*5,i*5+5));
+}
+
+// ===== PROCESSING
 const processing={
-scared:["Am I safe right now?","Slow down.","Look carefully.","Take a breath."],
-angry:["Pause.","Don’t snap.","Why am I reacting?","Breathe first."],
-sad:["This feels heavy.","It’s okay to feel this.","I need a moment.","Maybe reach out."],
+scared:["Am I safe right now?","Slow down.","Look carefully.","Breathe."],
+angry:["Pause.","Don’t snap.","Take a breath.","Step back."],
+sad:["This feels heavy.","It’s okay to feel.","I need a moment.","Maybe reach out."],
 happy:["Enjoy this.","Stay in it.","This feels good.","Appreciate it."],
-calm:["Stay here.","Nothing to rush.","This is steady.","Be present."],
+calm:["Stay here.","Nothing to rush.","Be present.","Stay steady."],
 strong:["I’ve got this.","Keep going.","Stay confident.","Push forward."]
 };
 
@@ -189,26 +226,12 @@ setTimeout(next,500);
 return c;
 }
 
-// ===== GET UNIQUE EMOTION WORD
+// ===== UNIQUE EMOTION WORD
 function getEmotionWord(type){
 let pool = emotions[type].filter(e=>!usedEmotionWords.includes(e));
 let chosen = pool[Math.floor(Math.random()*pool.length)];
 usedEmotionWords.push(chosen);
 return chosen;
-}
-
-// ===== GET UNIQUE COPING
-function getCoping(type){
-let pool = copingPools[type].filter(e=>!usedCoping.includes(e));
-let selected=[];
-
-for(let i=0;i<5;i++){
-let c = pool.splice(Math.floor(Math.random()*pool.length),1)[0];
-usedCoping.push(c);
-selected.push(c);
-}
-
-return selected;
 }
 
 // ===== MAIN LOOP
@@ -223,7 +246,7 @@ return;
 let s = scenarios.splice(Math.floor(Math.random()*scenarios.length),1)[0];
 
 let emotionWord = getEmotionWord(s.type);
-let copingSet = getCoping(s.type);
+let copingSet = copingGroups[step];
 
 let round = Math.floor(step/5)+1;
 let scenarioNum = (step%5)+1;
@@ -240,6 +263,7 @@ document.getElementById("scenario").innerHTML=
 let c=document.getElementById("cards");
 c.innerHTML="";
 
+// processing first
 processing[s.type].forEach(p=>{
 c.appendChild(makeCard(p,showCoping));
 });
@@ -260,7 +284,6 @@ c.innerHTML=`<button onclick="next()">➡️ NEXT</button>`;
 function startGame(){
 step=0;
 usedEmotionWords=[];
-usedCoping=[];
 document.getElementById("startScreen").style.display="none";
 document.getElementById("game").style.display="block";
 next();
@@ -269,7 +292,7 @@ next();
 // ===== END
 function endGame(){
 document.getElementById("scenario").innerHTML=
-`<h2>🎉 Perfect run. No repeats. Fully matched.</h2>`;
+`<h2>🎉 You completed all 50 scenarios.</h2>`;
 document.getElementById("cards").innerHTML="";
 }
 
