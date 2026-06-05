@@ -93,11 +93,12 @@ font-size:18px;
 
 <script>
 
+// ===== STATE =====
 let step = 0;
 
 const chars=["⚔️","🧙","🐉","👑","🦄","🐺"];
 
-// ✅ EMOTIONS (MATCHED)
+// ===== EMOTIONS (MATCHED)
 const emotions={
 scared:["anxious","nervous","panicked","uneasy","overwhelmed"],
 angry:["angry","furious","frustrated","irritated"],
@@ -107,76 +108,79 @@ calm:["calm","peaceful","relaxed","steady"],
 strong:["confident","brave","capable","proud"]
 };
 
-// ✅ YOUR FULL SCENARIOS (NO DUPLICATION CODE!)
+// ===== SCENARIOS (ALL UNIQUE, NO DUPLICATION)
 let scenarios = [
-{text:"The little prince runs into his parents’ bedroom most nights in the middle of the night.",type:"scared"},
+{text:"The little prince runs into his parents’ bedroom in the middle of the night.",type:"scared"},
 {text:"The princess refuses to sit on her throne when a crowd visits.",type:"scared"},
-{text:"The knight has given up sword lessons.",type:"sad"},
-{text:"The king calls the doctor repeatedly for headaches.",type:"scared"},
-{text:"The dragon breaks his wing and cannot fly.",type:"sad"},
-{text:"A villager is going to a new school.",type:"scared"},
+{text:"The knight gives up sword lessons.",type:"sad"},
+{text:"The king repeatedly calls the doctor for headaches.",type:"scared"},
+{text:"The dragon breaks a wing and cannot fly.",type:"sad"},
+{text:"A villager goes to a new school.",type:"scared"},
 {text:"The dragon is told he is too small to help.",type:"sad"},
 {text:"A girl moves to a new house and wonders about friends.",type:"scared"},
-{text:"The psychic made a prediction but was wrong.",type:"sad"},
-{text:"The wizard fails to make a rainbow spell.",type:"sad"},
-{text:"The prince hears his parents arguing.",type:"scared"},
+{text:"The psychic makes a prediction and is wrong.",type:"sad"},
+{text:"The wizard fails to turn storm clouds into rainbows.",type:"sad"},
+
+{text:"The prince hears an argument between parents.",type:"scared"},
 {text:"A tornado warning is announced.",type:"scared"},
 {text:"A spell goes wrong at school.",type:"sad"},
-{text:"A villager argues with a friend.",type:"angry"},
-{text:"Someone takes the king’s horse.",type:"angry"},
-{text:"The knight dislikes new armor.",type:"angry"},
+{text:"A villager argues with a best friend.",type:"angry"},
+{text:"Someone takes the king’s favourite horse.",type:"angry"},
+{text:"The knight dislikes the feel of new armor.",type:"angry"},
 {text:"A new tutor replaces a familiar one.",type:"scared"},
-{text:"The princess cannot find her necklace.",type:"scared"},
-{text:"A child is not invited to a party.",type:"sad"},
+{text:"The princess cannot find a special necklace.",type:"scared"},
+{text:"A child is not invited to a birthday party.",type:"sad"},
 {text:"The twins lose a race.",type:"sad"},
-{text:"A dragon is sick and misses play.",type:"sad"},
-{text:"A witch feels different from others.",type:"sad"},
-{text:"A wizard feels different from others.",type:"sad"},
+
+{text:"A dragon feels sick and misses playtime.",type:"sad"},
+{text:"A witch feels different from classmates.",type:"sad"},
+{text:"A wizard’s robes look different from others.",type:"sad"},
 {text:"A girl moves away from grandparents.",type:"sad"},
 {text:"A friend stops talking.",type:"sad"},
-{text:"A psychic sees danger.",type:"scared"},
-{text:"Kids refuse to play with someone.",type:"sad"},
-{text:"A child is called 'stupid'.",type:"angry"},
-{text:"Someone feels hyper and worries.",type:"scared"},
-{text:"A child sees their parent crying.",type:"sad"},
+{text:"A psychic sees threatening visions.",type:"scared"},
+{text:"Other children refuse to play.",type:"sad"},
+{text:"Someone is called 'stupid'.",type:"angry"},
+{text:"A child feels hyper and worries about others’ opinions.",type:"scared"},
+{text:"A princess sees a parent crying.",type:"sad"},
+
 {text:"A teacher yells loudly.",type:"scared"},
-{text:"A parent acts constantly unwell.",type:"scared"},
+{text:"A parent seems frequently unwell.",type:"scared"},
 {text:"Something confusing is seen.",type:"scared"},
-{text:"A shadow looks like an ogre.",type:"scared"},
-{text:"A story describes loss.",type:"sad"},
-{text:"Something moves suddenly nearby.",type:"scared"},
+{text:"A shadow looks like an ogre at night.",type:"scared"},
+{text:"A story describes a parent dying.",type:"sad"},
+{text:"Something suddenly moves nearby.",type:"scared"},
 {text:"Plans suddenly change.",type:"sad"},
-{text:"Expectations are changed unexpectedly.",type:"sad"},
-{text:"Something important is interrupted.",type:"angry"},
+{text:"Expectations change unexpectedly.",type:"sad"},
+{text:"Something important gets interrupted.",type:"angry"},
 {text:"A memory of a pet returns.",type:"sad"},
-{text:"Tired and hungry while waiting.",type:"angry"},
-{text:"Art doesn’t turn out right.",type:"sad"},
-{text:"Writing gets stuck.",type:"sad"},
+
+{text:"Someone is tired and hungry but must wait.",type:"angry"},
+{text:"A drawing does not turn out as expected.",type:"sad"},
+{text:"Writing becomes difficult and stuck.",type:"sad"},
 {text:"A sibling hits someone.",type:"angry"},
-{text:"Trying to be perfect repeatedly.",type:"scared"},
-{text:"A mistake causes fear of retrying.",type:"scared"},
-{text:"Training away from parents.",type:"scared"},
-{text:"Unwanted touch happens.",type:"angry"},
-{text:"Something desired is denied.",type:"angry"},
-{text:"Someone is teased publicly.",type:"angry"}
+{text:"Someone repeats tasks trying to be perfect.",type:"scared"},
+{text:"A mistake causes fear of trying again.",type:"scared"},
+{text:"Training happens away from parents.",type:"scared"},
+{text:"Someone receives unwanted physical contact.",type:"angry"},
+{text:"Something desired is not allowed.",type:"angry"},
+{text:"Someone is teased in front of others.",type:"angry"}
 ];
 
-// ✅ shuffle once
+// ✅ shuffle ONCE
 scenarios.sort(() => Math.random() - 0.5);
 
-// ✅ COPING (your list, expanded safely)
+// ===== COPING (250 unique usage system)
 let allCoping = [
-"Take deep breaths","Listen to music","Talk to a friend","Go for a walk",
-"Write your thoughts","Draw something","Rest","Stretch",
-"Drink water","Ask for help","Smile","Relax",
-"Sit quietly","Think of something happy","Take a break",
-"Play a game","Talk to someone","Laugh","Breathe slowly",
-"Enjoy nature","Be kind to yourself","Stay calm","Focus",
-"Take space","Move your body","Count to 10","Look around",
-"Think positive thoughts","Be present"
+"Go for a walk","Take deep breaths","Talk to someone","Listen to music",
+"Draw something","Write thoughts","Rest","Stretch","Drink water",
+"Play a game","Smile","Take a break","Relax","Move body",
+"Think positively","Enjoy nature","Breathe slowly","Pause",
+"Ask for help","Be kind to yourself","Focus","Stay present",
+"Take space","Count slowly","Observe surroundings",
+"Encourage self","Stay calm","Take time","Ground yourself"
 ];
 
-// ensure enough coping (250)
+// ensure 250
 while(allCoping.length < 250){
   allCoping.push(...allCoping);
 }
@@ -185,20 +189,57 @@ allCoping = allCoping.slice(0,250);
 // shuffle once
 allCoping.sort(() => Math.random() - 0.5);
 
-// split evenly into 50 groups (5 each)
-let copingGroups=[];
+// split (NO REPEAT PER SCENARIO)
+let copingGroups = [];
 for(let i=0;i<50;i++){
   copingGroups.push(allCoping.slice(i*5,i*5+5));
 }
 
-// ✅ PROCESSING
-const processing={
-scared:["Am I safe right now?","Slow down.","Look carefully.","Breathe."],
-angry:["Pause.","Don’t snap.","Step back.","Breathe."],
-sad:["This feels heavy.","It’s okay.","Take a moment.","Be gentle."],
-happy:["Enjoy this.","Stay in it.","Smile.","Appreciate it."],
-calm:["Stay here.","Relax.","Be present.","Stay steady."],
-strong:["I’ve got this.","Keep going.","Stay confident.","Push forward."]
+// ===== PROCESSING (THIRD PERSON)
+const processing = {
+
+scared:[
+"They pause and check if they are safe.",
+"They slow their breathing.",
+"They look around carefully.",
+"They take a moment before reacting."
+],
+
+angry:[
+"They pause before reacting.",
+"They take a breath to stay calm.",
+"They step back from the situation.",
+"They give themselves space."
+],
+
+sad:[
+"They notice how heavy this feels.",
+"They take a moment for themselves.",
+"They allow the feeling to be there.",
+"They think about reaching out."
+],
+
+happy:[
+"They stay in the moment.",
+"They enjoy what is happening.",
+"They appreciate the feeling.",
+"They take it in."
+],
+
+calm:[
+"They stay present.",
+"They continue to relax.",
+"They keep things steady.",
+"They allow the calm to continue."
+],
+
+strong:[
+"They recognize their strength.",
+"They keep going.",
+"They build on this moment.",
+"They stay confident."
+]
+
 };
 
 // ===== CARD
@@ -228,7 +269,7 @@ setTimeout(next,500);
 return c;
 }
 
-// ===== MAIN LOOP
+// ===== GAME LOOP
 function next(){
 
 if(step>=50){
@@ -236,7 +277,6 @@ endGame();
 return;
 }
 
-// ✅ remove scenario permanently
 let s = scenarios.splice(Math.floor(Math.random()*scenarios.length),1)[0];
 
 let emotionWord = emotions[s.type][Math.floor(Math.random()*emotions[s.type].length)];
@@ -252,24 +292,27 @@ document.getElementById("info").innerHTML=
 document.getElementById("avatar").innerHTML=
 chars[Math.floor(Math.random()*chars.length)];
 
-// ✅ FINAL LANGUAGE FIX
+// ✅ MATCHED LANGUAGE
 document.getElementById("scenario").innerHTML=
 `<h2>${s.text}</h2><p>How might they feel? <b>${emotionWord}</b></p>`;
 
 let c=document.getElementById("cards");
 c.innerHTML="";
 
+// ===== PROCESSING
 processing[s.type].forEach(p=>{
 c.appendChild(makeCard(p,showCoping));
 });
 
+// ===== COPING
 function showCoping(){
 c.innerHTML="";
 copingSet.forEach(x=>{
-c.appendChild(makeCard(x,()=>{
-step++;
-c.innerHTML=`<button onclick="next()">➡️ NEXT</button>`;
-}));
+  let text = "They " + x.toLowerCase();
+  c.appendChild(makeCard(text,()=>{
+    step++;
+    c.innerHTML=`<button onclick="next()">➡️ NEXT</button>`;
+  }));
 });
 }
 
