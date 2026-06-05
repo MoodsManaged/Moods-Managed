@@ -3,125 +3,117 @@
 <head>
   <title>Moods Managed</title>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial;
-      text-align: center;
-      color: white;
+<style>
+body {
+  margin: 0;
+  font-family: Arial;
+  text-align: center;
+  color: white;
+  background: radial-gradient(circle, #2c2f6b, #0d0f2e);
+  transition: background 1s ease;
+}
 
-      background: radial-gradient(circle at center, #2c2f6b, #0d0f2e);
-      transition: background 1s ease;
-    }
+h1 {
+  font-size: 55px;
+  color: gold;
+}
 
-    h1 {
-      margin-top: 30px;
-      font-size: 55px;
-      color: gold;
-      text-shadow: 0 0 25px gold;
-    }
+#avatar {
+  font-size: 90px;
+  margin: 20px;
+}
 
-    /* ✅ AVATAR */
-    #avatar {
-      font-size: 90px;
-      margin: 20px;
-    }
+#scenario h2 {
+  font-size: 32px;
+}
 
-    /* 🎭 ANIMATIONS */
+#scenario p {
+  font-size: 28px;
+}
 
-    .angry {
-      animation: shake 0.2s infinite;
-    }
+/* 🎴 CARD CONTAINER */
+#cards {
+  display: flex;
+  justify-content: center;
+  gap: 25px;
+  margin: 40px;
+  flex-wrap: wrap;
+}
 
-    @keyframes shake {
-      0%{transform:translateX(-3px);}
-      50%{transform:translateX(3px);}
-      100%{transform:translateX(-3px);}
-    }
+/* 🎴 CARD BASE */
+.card {
+  width: 240px;
+  height: 360px;
+  perspective: 1000px;
+}
 
-    .scared {
-      animation: pulse 1s infinite;
-    }
+/* FLIP STRUCTURE */
+.card-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
 
-    @keyframes pulse {
-      0%{transform:scale(1);}
-      50%{transform:scale(1.1);}
-      100%{transform:scale(1);}
-    }
+.card.flipped .card-inner {
+  transform: rotateY(180deg);
+}
 
-    .sad {
-      opacity: 0.6;
-      transform: scale(0.9);
-    }
+/* FRONT + BACK */
+.card-front, .card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+  backface-visibility: hidden;
 
-    .happy {
-      animation: bounce 0.6s infinite alternate;
-    }
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 25px;
+  text-align: center;
+  font-size: 20px;
+}
 
-    @keyframes bounce {
-      from{transform:translateY(0);}
-      to{transform:translateY(-10px);}
-    }
+/* FRONT BASE */
+.card-front {
+  background: linear-gradient(145deg, #1b1d47, #2a2f85);
+  box-shadow: 0 0 25px rgba(0,0,0,0.7);
+}
 
-    .calm {
-      animation: float 3s infinite ease-in-out;
-    }
+/* BACK SIDE */
+.card-back {
+  background: #111;
+  transform: rotateY(180deg);
+  font-size: 26px;
+}
 
-    @keyframes float {
-      0%{transform:translateY(0);}
-      50%{transform:translateY(-5px);}
-      100%{transform:translateY(0);}
-    }
+/* 🎨 STAGE COLORS */
 
-    .strong {
-      transform: scale(1.2);
-    }
+/* PROCESSING = BLUE */
+.processing .card-front {
+  border: 3px solid #3a86ff;
+  box-shadow: 0 0 25px #3a86ff;
+}
 
-    #scenario {
-      margin: 20px;
-    }
+/* DECISION = GOLD */
+.decision .card-front {
+  border: 3px solid gold;
+  box-shadow: 0 0 30px gold;
+}
 
-    #cards {
-      display: flex;
-      justify-content: center;
-      gap: 30px;
-      margin: 40px;
-      flex-wrap: wrap;
-    }
+/* COPING = GREEN */
+.coping .card-front {
+  border: 3px solid #06d6a0;
+  box-shadow: 0 0 30px #06d6a0;
+}
 
-    .card {
-      width: 320px;
-      padding: 35px;
-      border-radius: 20px;
-      cursor: pointer;
-      font-size: 20px;
-
-      background: linear-gradient(145deg, #1b1d47, #2a2f85);
-      box-shadow: 0 0 20px rgba(0,0,0,0.6);
-
-      transition: 0.25s;
-    }
-
-    .card:hover {
-      transform: scale(1.08);
-      box-shadow: 0 0 30px rgba(255,255,255,0.5);
-    }
-
-    #startScreen {
-      margin-top: 100px;
-    }
-
-    .start-button {
-      padding: 20px 40px;
-      font-size: 22px;
-      border-radius: 15px;
-      cursor: pointer;
-      background: #2a2f85;
-      color: white;
-      border: none;
-    }
-
-  </style>
+.start-button {
+  padding: 20px 40px;
+  font-size: 24px;
+}
+</style>
 </head>
 
 <body>
@@ -129,7 +121,6 @@
 <h1>🏰 Moods Managed</h1>
 
 <div id="startScreen">
-  <p>Welcome to your emotional quest.</p>
   <button class="start-button" onclick="startGame()">Start Game</button>
 </div>
 
@@ -144,17 +135,18 @@
 // ===== STATE =====
 let usedScenarios=[];
 
-// ✅ EMOTIONS
+// ===== DATA =====
+const characters=["⚔️","🧙","🐉","👑","🦄"];
+
 const emotionGroups={
-  angry:["angry","furious"],
-  scared:["anxious","panicked"],
-  sad:["sad","lonely"],
-  happy:["happy","joyful"],
-  calm:["calm","peaceful"],
-  strong:["confident","brave"]
+  angry:["angry"],
+  scared:["scared"],
+  sad:["sad"],
+  happy:["happy"],
+  calm:["calm"],
+  strong:["confident"]
 };
 
-// ✅ EMOTION COLORS
 const emotionColors={
   angry:"#ff4b5c",
   scared:"#845ef7",
@@ -164,33 +156,68 @@ const emotionColors={
   strong:"#06d6a0"
 };
 
-// ✅ CHARACTERS
-const characters=["⚔️","🧙","🐉","👑","🧑","🦄"];
+const copingByEmotion={
+  scared:["Breathe slowly","Stay safe","Look around"],
+  angry:["Walk","Move","Step away"],
+  sad:["Talk","Cry","Hug"],
+  happy:["Play","Share","Smile"],
+  calm:["Relax","Read","Breathe"],
+  strong:["Try","Lead","Go for it"]
+};
 
-// ✅ START
+const processingActions=[
+  "Pause and breathe","Notice what I feel","Slow things down",
+  "Ask what I need","Take a moment","Observe carefully",
+  "Check in with myself","Think before acting",
+  "Remind myself this will pass","Stay still for a moment"
+];
+
+// ===== CARD CREATOR =====
+function createCard(text, stage, next) {
+
+  const card=document.createElement("div");
+  card.className="card " + stage;
+
+  const inner=document.createElement("div");
+  inner.className="card-inner";
+
+  const front=document.createElement("div");
+  front.className="card-front";
+  front.innerHTML=text;
+
+  const back=document.createElement("div");
+  back.className="card-back";
+  back.innerHTML="✓";
+
+  inner.appendChild(front);
+  inner.appendChild(back);
+  card.appendChild(inner);
+
+  card.onclick=()=>{
+    card.classList.add("flipped");
+    setTimeout(next, 500);
+  };
+
+  return card;
+}
+
+// ===== START =====
 function startGame(){
   document.getElementById("startScreen").style.display="none";
   document.getElementById("game").style.display="block";
   nextScenario();
 }
 
-// ✅ MAIN LOOP
+// ===== MAIN LOOP =====
 function nextScenario(){
 
   const avatar=document.getElementById("avatar");
-
-  // pick random character
-  avatar.className="";
-  avatar.innerHTML=characters[Math.floor(Math.random()*characters.length)];
+  avatar.innerHTML=characters[Math.random()*characters.length|0];
 
   const s=generateScenario();
 
-  // ✅ APPLY COLOR
   document.body.style.background=
-    `radial-gradient(circle, ${emotionColors[s.emotion.type]}, #0d0f2e)`;
-
-  // ✅ APPLY ANIMATION CLASS
-  avatar.classList.add(s.emotion.type);
+    `radial-gradient(circle, ${emotionColors[s.emotion.type]}, #111)`;
 
   window.currentEmotion=s.emotion.type;
 
@@ -202,16 +229,17 @@ function nextScenario(){
   const cards=document.getElementById("cards");
   cards.innerHTML="";
 
-  ["Pause","Notice","Think"].forEach(c=>{
-    const el=document.createElement("div");
-    el.className="card";
-    el.innerHTML=c;
-    el.onclick=showDecision;
-    cards.appendChild(el);
+  // ✅ PROCESSING STAGE
+  const options = processingActions
+    .sort(()=>Math.random()-0.5)
+    .slice(0,4);
+
+  options.forEach(t=>{
+    cards.appendChild(createCard(t, "processing", showDecision));
   });
 }
 
-// ✅ DECISION
+// ===== DECISION =====
 function showDecision(){
   const cards=document.getElementById("cards");
   cards.innerHTML="";
@@ -219,24 +247,11 @@ function showDecision(){
   ["Pause and think","Ask for help","Ignore it","React instantly"]
     .sort(()=>Math.random()-0.5)
     .forEach(t=>{
-      const el=document.createElement("div");
-      el.className="card";
-      el.innerHTML=t;
-      el.onclick=showCoping;
-      cards.appendChild(el);
+      cards.appendChild(createCard(t, "decision", showCoping));
     });
 }
 
-// ✅ COPING
-const copingByEmotion={
-  scared:["Breathe slowly","Stay safe","Look around"],
-  angry:["Walk","Breathe","Move"],
-  sad:["Talk","Cry","Hug"],
-  happy:["Play","Smile","Share"],
-  calm:["Relax","Read"],
-  strong:["Try","Lead"]
-};
-
+// ===== COPING =====
 function showCoping(){
   const cards=document.getElementById("cards");
   cards.innerHTML="";
@@ -244,45 +259,33 @@ function showCoping(){
   copingByEmotion[window.currentEmotion]
     .sort(()=>Math.random()-0.5)
     .slice(0,4)
-    .forEach(c=>{
-      const el=document.createElement("div");
-      el.className="card";
-      el.innerHTML=c;
-      el.onclick=()=>{
+    .forEach(t=>{
+      cards.appendChild(createCard(t, "coping", ()=>{
         cards.innerHTML="<p>💚 Good choice</p>";
-        setTimeout(nextScenario,1500);
-      };
-      cards.appendChild(el);
+        setTimeout(nextScenario,1000);
+      }));
     });
 }
 
-// ✅ SCENARIOS
+// ===== SCENARIOS =====
 function generateScenario(){
 
 const scenarios=[
   {text:"My wing is broken and I cannot fly",type:"sad"},
-  {text:"I am going somewhere new",type:"scared"},
-  {text:"I hear something scary",type:"scared"},
-  {text:"Someone is mean to me",type:"angry"},
+  {text:"Something feels scary around me",type:"scared"},
   {text:"Something is unfair",type:"angry"},
-  {text:"I did something great",type:"strong"},
+  {text:"I did something amazing",type:"strong"},
   {text:"Everything feels calm",type:"calm"},
   {text:"I am having fun",type:"happy"}
 ];
 
-let available=scenarios.filter(s=>!usedScenarios.includes(s.text));
-if(available.length===0){usedScenarios=[];available=scenarios;}
+const chosen=scenarios[Math.random()*scenarios.length|0];
 
-const chosen=available[Math.floor(Math.random()*available.length)];
-usedScenarios.push(chosen.text);
-
-const emo=emotionGroups[chosen.type];
-
-return{
-  text:chosen.text,
+return {
+  text: chosen.text,
   emotion:{
     type:chosen.type,
-    word:emo[Math.floor(Math.random()*emo.length)]
+    word:emotionGroups[chosen.type][0]
   }
 };
 
