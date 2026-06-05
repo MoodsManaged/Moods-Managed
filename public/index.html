@@ -31,6 +31,7 @@ margin:40px;
 width:240px;
 height:360px;
 perspective:1000px;
+cursor:pointer;
 }
 
 .card-inner{
@@ -88,133 +89,190 @@ margin-top:10px;
 
 <script>
 
-// ===== STATE =====
 let usedScenarios=[];
 let score=0;
 
-// ===== CHARACTERS
 const chars=["⚔️","🧙","🐉","👑","🧝","🦄","🐺","🧑"];
 
-// ===== EMOTIONS
 const emotionWords={
-angry:["angry","furious","frustrated","irritated"],
-scared:["anxious","worried","panicked","overwhelmed"],
-sad:["sad","lonely","hopeless","disappointed"],
+angry:["angry","frustrated","annoyed","furious"],
+scared:["anxious","nervous","on edge","panicked"],
+sad:["sad","down","lonely","disappointed"],
 happy:["happy","excited","joyful","playful"],
-calm:["calm","peaceful","relaxed","safe"],
-strong:["confident","brave","proud","capable"]
+calm:["calm","peaceful","safe","relaxed"],
+strong:["confident","brave","capable","proud"]
 };
 
-// ===== SCENARIO CLUSTERS
-const clusters = {
-
+const clusters={
 home:[
-{text:"I hear a noise at night",type:"scared"},
-{text:"My parents argue loudly",type:"scared"},
-{text:"Something breaks unexpectedly",type:"angry"},
+{text:"I hear something unusual at night",type:"scared"},
+{text:"Something at home feels unfair",type:"angry"},
 {text:"I feel left out at home",type:"sad"}
 ],
-
 school:[
 {text:"Someone laughs at me",type:"sad"},
-{text:"I get a bad grade",type:"sad"},
-{text:"Someone cheats in a game",type:"angry"},
-{text:"I must present in front of class",type:"scared"}
+{text:"I have to speak in front of everyone",type:"scared"},
+{text:"Something feels really unfair in class",type:"angry"}
 ],
-
 social:[
 {text:"A friend ignores me",type:"sad"},
-{text:"Someone says something mean",type:"angry"},
-{text:"I feel nervous meeting new people",type:"scared"},
-{text:"I help someone successfully",type:"strong"}
+{text:"Someone says something hurtful",type:"angry"},
+{text:"Meeting new people makes me nervous",type:"scared"}
 ],
-
 fantasy:[
-{text:"A dragon roars nearby",type:"scared"},
-{text:"A knight challenges me unfairly",type:"angry"},
-{text:"I fail a magical task",type:"sad"},
-{text:"I defeat a challenge",type:"strong"}
+{text:"Something moves in the shadows nearby",type:"scared"},
+{text:"A challenge feels unfair",type:"angry"},
+{text:"I fail something important",type:"sad"},
+{text:"I overcome something difficult",type:"strong"}
 ]
-
 };
 
-// flatten all scenarios
 let allScenarios = Object.values(clusters).flat();
 
-// ===== HUGE PROCESSING (50+)
-const processing = Array.from({length:60},(_,i)=>
-[
-"Pause and breathe","Think before acting","Slow down",
-"Check how I feel","Notice my body",
-"Ask what I need","Wait a moment",
-"Observe carefully","Stay still",
-"Take control","Step back",
-"Stay calm","Focus on breathing",
-"Be curious","Name my feeling",
-"Remind myself I’m okay",
-"Look around safely",
-"Don’t rush","Stay present"
-][i%20] + " " + (i+1)
-);
+// ✅ HUMAN PROCESSING
+const processing = [
+"Wait… what’s going on right now?",
+"Okay… what am I actually feeling?",
+"Maybe I should slow this down.",
+"Let me pause for a second.",
+"What do I really need right now?",
+"I should take a breath first.",
+"Let’s not rush this.",
+"Hold on… think first.",
+"Why is this affecting me?",
+"I need a moment to think.",
+"Let me just breathe for a second.",
+"What’s the best way to handle this?",
+"Okay… stay calm.",
+"Let’s figure this out.",
+"Don’t react immediately.",
+"Take a step back for a moment.",
+"I should check how I’m feeling.",
+"What’s really happening here?",
+"Wait before doing anything.",
+"I don’t have to react right away."
+];
 
-// ===== HUGE DECISION ENGINE (emotion-based)
+// ✅ HUMAN DECISION SYSTEM
+function getDecisionSet(emotion){
 
-function buildDecisions(emotion){
+const map = {
+scared:[
+{t:"I should take a breath first.",type:"best"},
+{t:"Maybe I can find somewhere safe.",type:"best"},
+{t:"I could ask someone for help.",type:"best"},
+{t:"Let me just stay calm and look around.",type:"best"},
 
-const base = {
-best:[
-"Take a breath first","Pause and think",
-"Ask for help","Stay calm","Choose carefully",
-"Think of a solution","Check my options",
-"Make a safe choice"
+{t:"Maybe I’ll just wait it out.",type:"okay"},
+{t:"I’ll ignore this for now.",type:"okay"},
+
+{t:"I should just panic.",type:"worst"},
+{t:"Run without thinking.",type:"worst"}
 ],
-okay:[
-"Wait for a bit","Do nothing for now",
-"Walk away","Ignore it slightly",
-"Delay reacting"
+
+angry:[
+{t:"I should pause before reacting.",type:"best"},
+{t:"Take a breath… don’t snap.",type:"best"},
+{t:"Maybe I should step away.",type:"best"},
+{t:"Let’s calm down first.",type:"best"},
+
+{t:"Just ignore it.",type:"okay"},
+{t:"Walk away quickly.",type:"okay"},
+
+{t:"I’m going to yell.",type:"worst"},
+{t:"React immediately.",type:"worst"}
 ],
-worst:[
-"React instantly","Yell","Blame someone",
-"Panic","Rush","Give up"
+
+sad:[
+{t:"Maybe I should talk to someone.",type:"best"},
+{t:"It’s okay to feel this…",type:"best"},
+{t:"I should be gentle with myself.",type:"best"},
+{t:"I could reach out.",type:"best"},
+
+{t:"I’ll stay quiet.",type:"okay"},
+{t:"Keep it to myself.",type:"okay"},
+
+{t:"Just shut everything out.",type:"worst"},
+{t:"Give up.",type:"worst"}
+],
+
+happy:[
+{t:"I want to enjoy this moment.",type:"best"},
+{t:"Maybe I should share this.",type:"best"},
+{t:"This feels really good.",type:"best"},
+
+{t:"Ignore it.",type:"okay"},
+
+{t:"Do something risky.",type:"worst"}
+],
+
+calm:[
+{t:"Let’s stay in this moment.",type:"best"},
+{t:"I feel good right now.",type:"best"},
+{t:"Just relax into this.",type:"best"},
+
+{t:"Do nothing.",type:"okay"},
+
+{t:"Rush into something.",type:"worst"}
+],
+
+strong:[
+{t:"I should take initiative here.",type:"best"},
+{t:"I can handle this.",type:"best"},
+{t:"Let’s try something bigger.",type:"best"},
+
+{t:"Maybe I’ll ease off.",type:"okay"},
+
+{t:"Push myself too hard.",type:"worst"}
 ]
 };
 
-let result=[];
-
-// add AI-style variety
-base.best.forEach(t=>{
-for(let i=0;i<3;i++){
-result.push({t:`${t} (${emotion})`,type:"best"});
-}
-});
-
-base.okay.forEach(t=>{
-for(let i=0;i<2;i++){
-result.push({t:`${t} (${emotion})`,type:"okay"});
-}
-});
-
-base.worst.forEach(t=>{
-result.push({t:`${t} (${emotion})`,type:"worst"});
-});
-
-return result.sort(()=>Math.random()-0.5).slice(0,4);
+return map[emotion].sort(()=>Math.random()-0.5).slice(0,4);
 
 }
 
-// ===== COPING
+// ✅ HUMAN COPING
 const coping={
-scared:["Breathe slowly","Ground yourself","Find safe place","Talk to someone"],
-angry:["Move body","Take space","Breathe deeply","Release safely"],
-sad:["Talk to someone","Cry","Rest","Comfort yourself"],
-happy:["Share","Play","Celebrate","Enjoy"],
-calm:["Relax","Stay present","Read","Rest"],
-strong:["Try something new","Lead","Help","Challenge yourself"]
+scared:[
+"Let’s slow my breathing down.",
+"I can look around and ground myself.",
+"Maybe I should sit somewhere safe.",
+"I could talk to someone I trust."
+],
+angry:[
+"I need to move my body a bit.",
+"Let me step away before I react.",
+"I’m going to take a breath.",
+"I can let some of this out safely."
+],
+sad:[
+"Maybe I should talk to someone.",
+"It’s okay to cry if I need to.",
+"I should give myself some comfort.",
+"Rest might actually help."
+],
+happy:[
+"I want to share this with someone.",
+"Let me enjoy this fully.",
+"I could celebrate this moment.",
+"This feels really nice."
+],
+calm:[
+"I’ll stay present in this feeling.",
+"Let’s not rush anything.",
+"I can just enjoy this calm.",
+"Maybe I’ll relax a bit more."
+],
+strong:[
+"I’m going to try something new.",
+"I could help someone else now.",
+"I feel ready to take this on.",
+"Let’s keep building on this."
+]
 };
 
 // ===== CARD
 function card(text,stage,next,meta){
-
 const c=document.createElement("div");
 c.className="card "+stage;
 
@@ -263,7 +321,6 @@ endGame();
 return;
 }
 
-// pick by cluster rotation
 const clusterKeys = Object.keys(clusters);
 const cluster = clusters[clusterKeys[usedScenarios.length % clusterKeys.length]];
 const available = cluster.filter(s=>!usedScenarios.includes(s));
@@ -294,42 +351,34 @@ processing.sort(()=>Math.random()-0.5).slice(0,4)
 
 }
 
-// ===== DECISION
 function showDecision(emo){
-
 const cards=document.getElementById("cards");
 cards.innerHTML="";
 
-buildDecisions(emo)
+getDecisionSet(emo)
 .forEach(d=>cards.appendChild(card(d.t,"decision",()=>showCoping(emo),d)));
-
 }
 
-// ===== COPING
 function showCoping(emo){
-
 const cards=document.getElementById("cards");
 cards.innerHTML="";
 
 coping[emo].forEach(c=>{
 cards.appendChild(card(c,"coping",()=>{
 cards.innerHTML=`
-<p>✅ Good choice</p>
+<p>✅ That was a good choice.</p>
 <button onclick="next()">➡️ GO TO NEXT ROUND</button>
 `;
 }));
 });
-
 }
 
-// ===== END
 function endGame(){
 document.getElementById("cards").innerHTML="";
-document.getElementById("scenario").innerHTML=`
-<h2>🎉 You completed ALL scenarios!</h2>
-<p>Total Score: ${score}</p>
-<button onclick="startGame()">Play Again</button>
-`;
+document.getElementById("scenario").innerHTML=
+`<h2>🎉 You worked through everything!</h2>
+<p>Final Score: ${score}</p>
+<button onclick="startGame()">Play Again</button>`;
 }
 
 </script>
